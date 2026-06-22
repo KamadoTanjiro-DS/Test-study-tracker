@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Final Nov 2026 Master Study Planner</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+<script>
+    // LocalStorage State Manager
+    const STORAGE_KEY = "ca_final_planner_state_v2";
+    
+    // Default Syllabus Data
+    const defaultSyllabus = {
+        fr: {
+            title: "Paper 1: Financial Reporting (FR)",
+            color: "indigo",
+            topics: [
+                { id: "fr_1", text: "Ind AS 115: Revenue from Contracts with Customers", wt: "High", checked: false },
+                { id: "fr_2", text: "Ind AS 116: Leases", wt: "High", checked: false },
+                { id: "fr_3", text: "Ind AS 103: Business Combinations", wt: "High", checked: false },
+                { id: "fr_4", text: "Ind AS 110: Consolidated Financial Statements", wt: "High", checked: false },
+                { id: "fr_5", text: "Financial Instruments (Ind AS 32, 107, 109)", wt: "High", checked: false },
+                { id: "fr_6", text: "Ind AS 2, 16, 23, 36, 38, 40 (Asset Block)", wt: "Medium", checked: false },
+                { id: "fr_7", text: "Share Based Payments (Ind AS 102)", wt: "Medium", checked: false },
+                { id: "fr_8", text: "Conceptual Framework & CSR Reporting", wt: "Low", checked: false }
+            ]
+        },
+        afm: {
+            title: "Paper 2: Advanced Financial Management (AFM)",
+            color: "blue",
+            topics: [
+                { id: "afm_1", text: "Foreign Exchange Exposure and Risk Management", wt: "High", checked: false },
+                { id: "afm_2", text: "Derivatives Analysis and Valuation", wt: "High", checked: false },
+                { id: "afm_3", text: "Portfolio Management", wt: "High", checked: false },
+                { id: "afm_4", text: "Mergers, Acquisitions and Corporate Restructuring", wt: "High", checked: false },
+                { id: "afm_5", text: "Mutual Funds & Valuation of Business", wt: "Medium", checked: false },
+                { id: "afm_6", text: "Security Analysis & Equity Valuation", wt: "Medium", checked: false },
+                { id: "afm_7", text: "Startup Finance & International Financial Management", wt: "Low", checked: false }
+            ]
+        },
+        audit: {
+            title: "Paper 3: Advanced Auditing & Ethics",
+            color: "emerald",
+            topics: [
+                { id: "aud_1", text: "Professional Ethics & Code of Conduct", wt: "High", checked: false },
+                { id: "aud_2", text: "Standards on Auditing (SA 200 to 499 series)", wt: "High", checked: false },
+                { id: "aud_3", text: "Standards on Auditing (SA 500 to 799 series)", wt: "High", checked: false },
+                { id: "aud_4", text: "Company Audit, CARO 2020 & Audit Report", wt: "High", checked: false },
+                { id: "aud_5", text: "Audit of Banks & Insurance Companies", wt: "Medium", checked: false },
+                { id: "aud_6", text: "Group Audit & Special Audits (Internal, Forensic)", wt: "Medium", checked: false },
+                { id: "aud_7", text: "Digital Auditing & Quality Control (SQC 1)", wt: "Low", checked: false }
+            ]
+        },
+        dt: {
+            title: "Paper 4: Direct Tax Laws & International Taxation",
+            color: "orange",
+            topics: [
+                { id: "dt_1", text: "Profits and Gains of Business or Profession (PGBP)", wt: "High", checked: false },
+                { id: "dt_2", text: "Transfer Pricing & Non-Resident Taxation", wt: "High", checked: false },
+                { id: "dt_3", text: "TDS, TCS & Advance Tax Provisions", wt: "High", checked: false },
+                { id: "dt_4", text: "Capital Gains & Income from Other Sources", wt: "Medium", checked: false },
+                { id: "dt_5", text: "Assessment Procedures, Appeals & Penalties", wt: "Medium", checked: false },
+                { id: "dt_6", text: "Double Taxation Avoidance Agreements (DTAA)", wt: "High", checked: false },
+                { id: "dt_7", text: "Charitable Trusts & MAT/AMT Provisions", wt: "Medium", checked: false },
+                { id: "dt_8", text: "Black Money Act & Tax Planning", wt: "Low", checked: false }
+            ]
+        },
+        idt: {
+            title: "Paper 5: Indirect Tax Laws (IDT)",
+            color: "rose",
+            topics: [
+                { id: "idt_1", text: "Input Tax Credit (ITC) - Core Rules & Blocked Credits", wt: "High", checked: false },
+                { id: "idt_2", text: "Place of Supply, Time of Supply & Value of Supply", wt: "High", checked: false },
+                { id: "idt_3", text: "Exemptions under GST & Charge of GST", wt: "Medium", checked: false },
+                { id: "idt_4", text: "Procedures: Registration, Invoices, Returns & E-way Bill", wt: "Medium", checked: false },
+                { id: "idt_5", text: "Appeals, Revisions, Offenses & Penalties", wt: "Medium", checked: false },
+                { id: "idt_6", text: "Customs Valuation & Duty Drawback", wt: "High", checked: false },
+                { id: "idt_7", text: "Customs Import, Export Procedures & FTP 2023", wt: "Medium", checked: false }
+            ]
+        },
+        ibs: {
+            title: "Paper 6: Integrated Business Solutions (IBS)",
+            color: "purple",
+            topics: [
+                { id: "ibs_1", text: "ICAI Case Studies: Group 1 Core Integrations", wt: "High", checked: false },
+                { id: "ibs_2", text: "ICAI Case Studies: Group 2 Core Integrations", wt: "High", checked: false },
+                { id: "ibs_3", text: "Multi-disciplinary Real-world Scenario Solving", wt: "Medium", checked: false },
+                { id: "ibs_4", text: "Open-book Indexing & Navigation Practice", wt: "High", checked: false }
+            ]
+        }
+    };
+
+    // Default Daily Routine Schedule
+    const defaultRoutine = [
+        { id: "r1", time: "06:00 AM - 06:30 AM", activity: "Wake up, light stretching, coffee/tea", icon: "🌅", done: false },
+        { id: "r2", time: "06:30 AM - 09:30 AM", activity: "Session 1 (3 Hours) — High Focus Core Paper (FR / AFM / DT)", icon: "🎯", done: false },
+        { id: "r3", time: "09:30 AM - 10:15 AM", activity: "Breakfast & mental relaxation break", icon: "🍳", done: false },
+        { id: "r4", time: "10:15 AM - 01:15 PM", activity: "Session 2 (3 Hours) — Practical Problems / Application Solve", icon: "✍️", done: false },
+        { id: "r5", time: "01:15 PM - 02:15 PM", activity: "Lunch & core power nap (boost cognitive memory)", icon: "💤", done: false },
+        { id: "r6", time: "02:15 PM - 05:15 PM", activity: "Session 3 (3 Hours) — Theory/Law/Auditing (Matches ICAI exam slot)", icon: "📚", done: false },
+        { id: "r7", time: "05:15 PM - 05:45 PM", activity: "Evening walk & quick hydration break", icon: "🚶‍♀️", done: false },
+        { id: "r8", time: "05:45 PM - 07:45 PM", activity: "Session 4 (2 Hours) — Easy topics, revisions, MCQ banks", icon: "📝", done: false },
+        { id: "r9", time: "07:45 PM onwards", activity: "Dinner, family chat, review tomorrow's goals, sleep by 10:30 PM", icon: "🌙", done: false }
+    ];
+
+    // Default Phase Progress
+    const defaultPhases = [
+        { id: "p1", name: "Phase 1: Detailed Revision", dateRange: "Aug 5 - Sep 15", desc: "First Comprehensive Concept & LDR Prep", totalDays: 42, completedDays: 0 },
+        { id: "p2", name: "Phase 2: Speed revision", dateRange: "Sep 16 - Oct 15", desc: "Speed Re-solving & MCQ Drills", totalDays: 30, completedDays: 0 },
+        { id: "p3", name: "Phase 3: Ultimate Polish", dateRange: "Oct 16 - Oct 31", desc: "Mock Tests & Exam Simulation", totalDays: 16, completedDays: 0 },
+        { id: "p4", name: "Phase 4: Warm-up", dateRange: "Nov 1 - Nov 13", desc: "Exam day execution & 1.5-day summaries", totalDays: 13, completedDays: 0 }
+    ];
+
+    // Load initial state or build brand new
+    let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+        syllabus: defaultSyllabus,
+        routine: defaultRoutine,
+        phases: defaultPhases,
+        ldrNotes: [
+            { id: 1, subject: "fr", title: "Ind AS 115 Step 5 - Transaction Price Allocations", text: "Focus on variable consideration constraints, rebates, volume discounts. Always allocate on relative stand-alone selling price basis (Ind AS 115.73)." },
+            { id: 2, subject: "afm", title: "Forex: Black-Scholes Model Variables", text: "S0 = Spot rate, K = Strike, r = Risk-free domestic, q = Foreign rate. Mind the continuous dividend yield equivalent treatment for foreign currency assets!" },
+            { id: 3, subject: "audit", title: "SA 560: Subsequent Events Responsibilities", text: "Differentiate between: Up to Date of Auditor's Report (Active inquiry) vs. After Report Date but before FS Issue (Passive - only if made aware)." }
+        ],
+        prepStartDate: "2026-08-05",
+        examStartDate: "2026-11-02",
+        userName: "Future Chartered Accountant"
+    };
+
+    // Prepare chronological hour logging array mapping to the 89 daily ramp targets
+    if (!state.hourLogs) {
+        state.hourLogs = {};
+        for (let i = 1; i <= 89; i++) {
+            let target = 8;
+            if (i > 15 && i <= 42) target = 10;
+            else if (i > 42 && i <= 72) target = 11;
+            else if (i > 72 && i <= 88) target = 12;
+            else if (i > 88) target = 13;
+            state.hourLogs[`day_${i}`] = { logged: null, target: target };
+        }
+    }
+
+    function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+</script>
+
+<!-- Header Navigation Bar -->
+<header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-500/30 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight flex items-center gap-2">
+                    CA Final <span class="bg-indigo-500/30 text-indigo-300 px-2.5 py-0.5 rounded-lg text-xs font-bold border border-indigo-500/30">NOV 2026</span>
+                </h1>
+                <p class="text-xs text-slate-400 font-medium">89-Day Both Groups Interactive Revision Dashboard</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="text-right hidden sm:block">
+                <span class="text-xs text-slate-400 block font-semibold uppercase tracking-wider">Candidate</span>
+                <input type="text" id="usernameInput" onchange="updateUsername(this.value)" class="bg-transparent border-b border-dashed border-slate-600 text-sm font-bold text-white focus:outline-none focus:border-indigo-400 text-right w-44" value="Future Chartered Accountant">
+            </div>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-rose-500 flex items-center justify-center font-bold text-white shadow-md">
+                CA
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN APP CONTAINER -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT SIDEBAR: CONFIG & OVERALL STATUS -->
+    <section class="lg:col-span-4 space-y-6">
+        
+        <!-- Live Countdown Cards -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 tracking-wider uppercase flex items-center justify-between">
+                <span>Timeline Status</span>
+                <span class="text-xs text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full font-semibold" id="currentDateBadge">June 3, 2026</span>
+            </h3>
+            
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                    <span class="text-xs text-slate-500 font-medium block">Days to Study Kickoff</span>
+                    <span class="text-2xl font-black text-slate-800" id="countdownToStart">--</span>
+                    <span class="text-[10px] text-indigo-600 block mt-1 font-semibold">Start: Aug 5, 2026</span>
+                </div>
+                <div class="bg-gradient-to-br from-indigo-50 to-blue-50 p-3.5 rounded-xl border border-indigo-100/50 text-center">
+                    <span class="text-xs text-indigo-700 font-medium block">Days to Exam Day</span>
+                    <span class="text-2xl font-black text-indigo-900" id="countdownToExam">--</span>
+                    <span class="text-[10px] text-indigo-600 block mt-1 font-semibold">Exam: Nov 2, 2026</span>
+                </div>
+            </div>
+
+            <!-- Total Checklist Progress -->
+            <div class="pt-2">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1.5">
+                    <span>Overall Syllabus Progress</span>
+                    <span class="text-indigo-600 font-bold" id="overallProgressText">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div id="overallProgressBar" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex items-center justify-between mt-2 text-[10px] text-slate-400">
+                    <span id="overallCheckedCount">0 of 0 topics checked</span>
+                    <span>Aim for 100% before Phase 3</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Date Configurer -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 space-y-4">
+            <button onclick="toggleConfig()" class="w-full flex items-center justify-between text-sm font-bold text-slate-800 focus:outline-none">
+                <span class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Adjust Target Dates
+                </span>
+                <svg id="configChevron" class="h-4 w-4 transform transition-transform text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <div id="configSection" class="hidden space-y-3 pt-1">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Preparation Start Date</label>
+                    <input type="date" id="inputPrepStart" onchange="updateDates()" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Exam Commencement Date</label>
+                    <input type="date" id="inputExamStart" onchange="updateDates()" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="text-[10px] text-indigo-600 bg-indigo-50 p-2.5 rounded-lg border border-indigo-100">
+                    💡 Changing parameters will immediately recalculate preparation days and countdown.
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Strategy Navigation Panel -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="bg-slate-900 px-4 py-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    Interactive Navigation
+                </h3>
+            </div>
+            <div class="divide-y divide-slate-100 text-sm">
+                <button onclick="switchTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-tab w-full text-left px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors font-semibold text-indigo-600 bg-indigo-50/50 border-r-4 border-indigo-600">
+                    <span class="flex items-center gap-2.5">📊 Master Dashboard</span>
+                    <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">Active</span>
+                </button>
+                <button onclick="switchTab('tab-subjects')" id="btn-tab-subjects" class="nav-tab w-full text-left px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors font-medium text-slate-600">
+                    <span class="flex items-center gap-2.5">📚 Subject Checklist</span>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full" id="sidebarSubjectProgress">0% Done</span>
+                </button>
+                <button onclick="switchTab('tab-routine')" id="btn-tab-routine" class="nav-tab w-full text-left px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors font-medium text-slate-600">
+                    <span class="flex items-center gap-2.5">⏰ 11-Hour Daily Routine</span>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full" id="sidebarRoutineProgress">0/9 Block</span>
+                </button>
+                <!-- Daily Hour Log Tab Link (Ramping targets from 8h to 13h) -->
+                <button onclick="switchTab('tab-hour-log')" id="btn-tab-hour-log" class="nav-tab w-full text-left px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors font-medium text-slate-600">
+                    <span class="flex items-center gap-2.5">📅 Daily Hours Log (8h-13h)</span>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full" id="sidebarHoursProgress">0/89 Days</span>
+                </button>
+                <button onclick="switchTab('tab-ldr')" id="btn-tab-ldr" class="nav-tab w-full text-left px-4 py-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors font-medium text-slate-600">
+                    <span class="flex items-center gap-2.5">📓 Custom LDR Register</span>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full" id="sidebarLDRCount">3 Saved</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Professional Advice Card -->
+        <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-200/50 space-y-3">
+            <h4 class="text-sm font-bold text-amber-800 flex items-center gap-1.5">
+                ⚡ Both Groups Strategy Mandate
+            </h4>
+            <ul class="text-xs text-amber-900/80 space-y-2 font-medium list-disc list-inside">
+                <li><strong>No Paper 6 IBS Panic:</strong> Preparing Paper 1 to 5 thoroughly handles 90% of IBS.</li>
+                <li><strong>30% MCQ Weightage:</strong> Practice mock questions concurrently with chapters.</li>
+                <li><strong>LDR (Last Day Revision) Rules:</strong> Flag complex conceptual blocks early.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- RIGHT MAIN SECTION -->
+    <section class="lg:col-span-8 space-y-6">
+
+        <!-- ==================== TAB 1: MASTER DASHBOARD ==================== -->
+        <div id="tab-dashboard" class="tab-content space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h2 class="text-xl font-bold text-slate-800">Your Master Revision Blueprint</h2>
+                    <p class="text-sm text-slate-500">Track and log completion status across the four main phases from August to November.</p>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-xl px-4 py-2 text-xs font-semibold flex items-center gap-1.5">
+                    🎓 Target: 500+ Marks
+                </div>
+            </div>
+
+            <!-- THE FOUR PHASES INTERACTIVE TIMELINE -->
+            <div class="space-y-4">
+                <h3 class="text-base font-bold text-slate-800 tracking-tight">Phase Tracker & Milestones</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Phase 1 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:border-indigo-200 transition-colors">
+                        <div class="p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-indigo-50 text-indigo-700 text-[11px] font-bold px-3 py-1 rounded-full">PHASE 1 (42 Days)</span>
+                                <span class="text-xs font-semibold text-slate-400">Aug 5 – Sep 15</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800">First Comprehensive Revision</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Pair one practical paper with one theory paper daily. Gain deep clarity, mark core LDR questions, and establish extensive summaries.</p>
+                            
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5 text-xs">
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Aug 5 - Aug 15:</span> <span class="text-slate-800">FR (6h) & Audit (5h)</span></div>
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Aug 16 - Aug 26:</span> <span class="text-slate-800">AFM (6h) & IDT (5h)</span></div>
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Aug 27 - Sep 7:</span> <span class="text-slate-800">DT (6h) & Buffer (5h)</span></div>
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Sep 8 - Sep 15:</span> <span class="text-slate-800">DT (6h) & IBS Cases (5h)</span></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-5 py-3.5 flex items-center justify-between">
+                            <span class="text-xs text-slate-500">Track Phase Progress:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="0" max="42" value="0" id="phase1_days" onchange="updatePhaseProgress(1, this.value)" class="w-12 text-center text-xs font-bold bg-white border border-slate-200 rounded p-1">
+                                <span class="text-xs text-slate-400 font-semibold">/ 42 Days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:border-blue-200 transition-colors">
+                        <div class="p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-blue-50 text-blue-700 text-[11px] font-bold px-3 py-1 rounded-full">PHASE 2 (30 Days)</span>
+                                <span class="text-xs font-semibold text-slate-400">Sep 16 – Oct 15</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800">Speed Re-solving & MCQs</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Shift to aggressive writing tests, formulas revisions, and complete the 30% MCQ weightage booklet. Solidify the core concepts.</p>
+                            
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5 text-xs">
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Sep 16 - Sep 20:</span> <span class="text-slate-800">Financial Reporting (5 Days)</span></div>
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Sep 21 - Sep 25:</span> <span class="text-slate-800">AFM (5 Days)</span></div>
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Sep 26 - Sep 30:</span> <span class="text-slate-800">Auditing (5 Days)</span></div>
+                                <div class="flex justify-between font-medium"><span class="text-slate-500">Oct 1 - Oct 15:</span> <span class="text-slate-800">DT, IDT & IBS Practice (15 Days)</span></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-5 py-3.5 flex items-center justify-between">
+                            <span class="text-xs text-slate-500">Track Phase Progress:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="0" max="30" value="0" id="phase2_days" onchange="updatePhaseProgress(2, this.value)" class="w-12 text-center text-xs font-bold bg-white border border-slate-200 rounded p-1">
+                                <span class="text-xs text-slate-400 font-semibold">/ 30 Days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:border-emerald-200 transition-colors">
+                        <div class="p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-emerald-50 text-emerald-700 text-[11px] font-bold px-3 py-1 rounded-full">PHASE 3 (16 Days)</span>
+                                <span class="text-xs font-semibold text-slate-400">Oct 16 – Oct 31</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800">Mock Tests & Speed Runs</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Simulate the real testing environment with 1.5-day mock cycles. Attempt at least one 3-hour exam for each major paper strictly from 2:00 PM to 5:00 PM.</p>
+                            
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-xs space-y-1">
+                                <div class="font-bold text-emerald-800 flex items-center gap-1">
+                                    <span>🗓️ 1.5-Day Mock Exam Simulation:</span>
+                                </div>
+                                <p class="text-slate-600 leading-normal text-[11px]">Includes dedicated mock sprints for FR, AFM, Audit, DT, IDT, and IBS.</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-5 py-3.5 flex items-center justify-between">
+                            <span class="text-xs text-slate-500">Track Phase Progress:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="0" max="16" value="0" id="phase3_days" onchange="updatePhaseProgress(3, this.value)" class="w-12 text-center text-xs font-bold bg-white border border-slate-200 rounded p-1">
+                                <span class="text-xs text-slate-400 font-semibold">/ 16 Days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 4 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:border-rose-200 transition-colors">
+                        <div class="p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-rose-50 text-rose-700 text-[11px] font-bold px-3 py-1 rounded-full">PHASE 4 (13 Days)</span>
+                                <span class="text-xs font-semibold text-slate-400">Nov 2 – Nov 13</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-800">Pre-Exam Execution</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Review only LDR questions and tailored revision charts during the 1.5-day gap. No brand new concepts or complex unmastered topics allowed.</p>
+                            
+                            <div class="bg-rose-50 border border-rose-100 p-3 rounded-lg text-[11px] text-rose-900 leading-normal font-medium">
+                                🚨 Avoid pre-exam post-mortems with peers. Take proper 6-7 hours of sound sleep prior to each paper.
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border-t border-slate-100 px-5 py-3.5 flex items-center justify-between">
+                            <span class="text-xs text-slate-500">Track Phase Progress:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="0" max="13" value="0" id="phase4_days" onchange="updatePhaseProgress(4, this.value)" class="w-12 text-center text-xs font-bold bg-white border border-slate-200 rounded p-1">
+                                <span class="text-xs text-slate-400 font-semibold">/ 13 Days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Cards Grid (Overview) -->
+            <div class="space-y-4">
+                <h3 class="text-base font-bold text-slate-800 tracking-tight">Papers & Preparation Status</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="dashboardSubjectCards">
+                    <!-- Cards populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 2: SUBJECT CHECKLISTS ==================== -->
+        <div id="tab-subjects" class="tab-content hidden space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h2 class="text-xl font-bold text-slate-800">High-Yield Subject Checklists</h2>
+                    <p class="text-sm text-slate-500">Verify and check off core topics of CA Final Group 1 & Group 2 syllabus.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAllTopics(true)" class="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors">Check All</button>
+                    <button onclick="toggleAllTopics(false)" class="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-slate-200 transition-colors">Clear All</button>
+                </div>
+            </div>
+
+            <div class="space-y-4" id="subjectListsAccordion">
+                <!-- Programmatically generated checklists per Paper -->
+            </div>
+        </div>
+
+        <!-- ==================== TAB 3: DAILY ROUTINE ==================== -->
+        <div id="tab-routine" class="tab-content hidden space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h2 class="text-xl font-bold text-slate-800">The 11-Hour High Focus Daily Routine</h2>
+                        <p class="text-sm text-slate-500">Track daily execution blocks. Specially structured with dedicated slots matching the official ICAI exam time.</p>
+                    </div>
+                    <div class="text-center bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase block">Daily Complete</span>
+                        <span class="text-xl font-extrabold text-indigo-600" id="routineProgressPercent">0%</span>
+                        <span class="text-[10px] text-slate-500 block" id="routineProgressFraction">0 of 9 blocks completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Routine Timeline -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                <div class="relative pl-6 border-l-2 border-indigo-100 space-y-6" id="routineListContainer">
+                    <!-- Dynamic timeline rows populated here -->
+                </div>
+                
+                <div class="mt-6 flex justify-end gap-2 pt-4 border-t border-slate-100">
+                    <button onclick="resetDailyRoutine()" class="text-slate-600 hover:text-red-600 text-xs font-bold px-4 py-2 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1.5">
+                        🔄 Reset Daily Routine Checklist
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 4: DAILY HOUR LOG (ASCENDING PACE) ==================== -->
+        <div id="tab-hour-log" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h2 class="text-xl font-bold text-slate-800">Ascending Hour Log & Ramp-Up Tracker</h2>
+                        <p class="text-sm text-slate-500">
+                            Build concentration progressively. Start with <strong class="text-indigo-600">8 hours/day</strong> in the first fortnight, ascending to <strong class="text-indigo-600">10 hours</strong>, then <strong class="text-indigo-600">11 hours</strong>, and topping at <strong class="text-rose-600">12-13 hours</strong> as exams draw near.
+                        </p>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl text-center shrink-0 min-w-[150px]">
+                        <span class="text-[10px] text-indigo-700 font-bold uppercase block">Avg. Study Daily</span>
+                        <span class="text-2xl font-black text-indigo-950" id="avgStudyHours">0.0h</span>
+                        <span class="text-[10px] text-slate-500 block mt-1" id="totalLoggedDays">0 of 89 days logged</span>
+                    </div>
+                </div>
+
+                <!-- Ramp-Up Strategy Progression Bar -->
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Ascending Target Map</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                        <div class="bg-slate-50 border border-slate-200/60 p-2.5 rounded-xl text-center">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase block">Days 1 - 15</span>
+                            <span class="text-sm font-extrabold text-slate-700 block">8h Target</span>
+                            <span class="text-[9px] text-indigo-600 font-semibold bg-indigo-50 px-1.5 py-0.5 rounded mt-1 inline-block">Habit Build</span>
+                        </div>
+                        <div class="bg-indigo-50/40 border border-indigo-100 p-2.5 rounded-xl text-center">
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase block">Days 16 - 42</span>
+                            <span class="text-sm font-extrabold text-indigo-800 block">10h Target</span>
+                            <span class="text-[9px] text-indigo-700 font-semibold bg-indigo-100 px-1.5 py-0.5 rounded mt-1 inline-block">Deep Revision</span>
+                        </div>
+                        <div class="bg-blue-50/40 border border-blue-100 p-2.5 rounded-xl text-center">
+                            <span class="text-[9px] font-bold text-blue-400 uppercase block">Days 43 - 72</span>
+                            <span class="text-sm font-extrabold text-blue-800 block">11h Target</span>
+                            <span class="text-[9px] text-blue-700 font-semibold bg-blue-100 px-1.5 py-0.5 rounded mt-1 inline-block">Solve Banks</span>
+                        </div>
+                        <div class="bg-emerald-50/40 border border-emerald-100 p-2.5 rounded-xl text-center">
+                            <span class="text-[9px] font-bold text-emerald-400 uppercase block">Days 73 - 88</span>
+                            <span class="text-sm font-extrabold text-emerald-800 block">12h Target</span>
+                            <span class="text-[9px] text-emerald-700 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded mt-1 inline-block">Exam Sim</span>
+                        </div>
+                        <div class="bg-rose-50/40 border border-rose-100 p-2.5 rounded-xl text-center col-span-2 sm:col-span-1">
+                            <span class="text-[9px] font-bold text-rose-400 uppercase block">Day 89</span>
+                            <span class="text-sm font-extrabold text-rose-800 block">13h Target</span>
+                            <span class="text-[9px] text-rose-700 font-semibold bg-rose-100 px-1.5 py-0.5 rounded mt-1 inline-block">Peak Run</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK LOGGER PANEL -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Log Entry Input -->
+                <div class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4 shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <span>📝 Log Day Session</span>
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Select Preparation Day</label>
+                            <select id="logDaySelect" onchange="onLogDayChange()" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                                <!-- Generated Dynamically -->
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-bold text-slate-500">Hours Studied</label>
+                                <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded" id="logTargetIndicator">Target: 8h</span>
+                            </div>
+                            <input type="number" id="logHoursInput" min="0" max="24" step="0.5" placeholder="Enter hours (e.g. 9.5)" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                        </div>
+                        <button onclick="saveHourLog()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-md">
+                            Save Day Study Log
+                        </button>
+                    </div>
+
+                    <!-- Motivational Status Card based on logged output -->
+                    <div id="motivationCard" class="bg-slate-50 border border-slate-100 p-4 rounded-xl text-center text-xs space-y-1 hidden">
+                        <span class="text-xl" id="motivationEmoji">🔥</span>
+                        <h4 class="font-bold text-slate-800" id="motivationTitle">Let's build momentum!</h4>
+                        <p class="text-slate-500 text-[10px]" id="motivationText">Logging consistent hours is key to cracking Both Groups.</p>
+                    </div>
+                </div>
+
+                <!-- Days Log Grid / Quick Stats -->
+                <div class="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm md:col-span-2 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">🗓️ Chronological Progress Grid</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="flex items-center gap-1 text-[10px] text-slate-400 font-semibold">
+                                <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span> Met Target
+                            </span>
+                            <span class="flex items-center gap-1 text-[10px] text-slate-400 font-semibold">
+                                <span class="w-2.5 h-2.5 bg-amber-500 rounded-full"></span> Under Target
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="max-h-[280px] overflow-y-auto custom-scrollbar border border-slate-100 rounded-xl">
+                        <div id="logDaysGrid" class="grid grid-cols-5 sm:grid-cols-9 md:grid-cols-10 gap-2 p-3 bg-slate-50">
+                            <!-- Populated with color-coded daily badges -->
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <button onclick="resetHourLogs()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition-colors">
+                            ⚠️ Clear All Hour Logs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 5: LDR REGISTER ==================== -->
+        <div id="tab-ldr" class="tab-content hidden space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h2 class="text-xl font-bold text-slate-800">Last Day Revision (LDR) Digital Notebook</h2>
+                        <p class="text-sm text-slate-500">Document tricky question IDs, key formula shortcuts, and standard references.</p>
+                    </div>
+                    <button onclick="toggleAddNoteModal(true)" class="bg-indigo-600 text-white hover:bg-indigo-700 text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-1.5">
+                        ➕ Add New LDR Entry
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes Filter Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1.5 custom-scrollbar">
+                <button onclick="filterNotes('all')" id="btn-note-all" class="note-filter bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all shadow-sm">All Papers</button>
+                <button onclick="filterNotes('fr')" id="btn-note-fr" class="note-filter bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 transition-all">FR</button>
+                <button onclick="filterNotes('afm')" id="btn-note-afm" class="note-filter bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 transition-all">AFM</button>
+                <button onclick="filterNotes('audit')" id="btn-note-audit" class="note-filter bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 transition-all">Audit</button>
+                <button onclick="filterNotes('dt')" id="btn-note-dt" class="note-filter bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 transition-all">DT</button>
+                <button onclick="filterNotes('idt')" id="btn-note-idt" class="note-filter bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 transition-all">IDT</button>
+                <button onclick="filterNotes('ibs')" id="btn-note-ibs" class="note-filter bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 transition-all">IBS</button>
+            </div>
+
+            <!-- Notes Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="notesGrid">
+                <!-- Dynamically populated notes cards -->
+            </div>
+
+            <!-- Add Note Modal (Overlay) -->
+            <div id="addNoteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 px-4">
+                <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden border border-slate-100 transform transition-all">
+                    <div class="bg-indigo-950 px-6 py-4 flex items-center justify-between text-white">
+                        <h3 class="text-sm font-bold flex items-center gap-1.5">
+                            📝 Save LDR Question / Formula Key
+                        </h3>
+                        <button onclick="toggleAddNoteModal(false)" class="text-slate-400 hover:text-white focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Target Subject</label>
+                            <select id="newNoteSubject" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                                <option value="fr">Paper 1: FR</option>
+                                <option value="afm">Paper 2: AFM</option>
+                                <option value="audit">Paper 3: Audit</option>
+                                <option value="dt">Paper 4: DT</option>
+                                <option value="idt">Paper 5: IDT</option>
+                                <option value="ibs">Paper 6: IBS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Entry Title</label>
+                            <input type="text" id="newNoteTitle" placeholder="Enter key concept, question code or formula title..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Notes Details / Solved Steps</label>
+                            <textarea id="newNoteText" rows="4" placeholder="Detail standard revisions, critical calculation tips, formula variables..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none custom-scrollbar font-medium"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 px-6 py-4 flex justify-end gap-2 border-t border-slate-100">
+                        <button onclick="toggleAddNoteModal(false)" class="bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold px-4 py-2 border border-slate-200 rounded-lg transition-colors">Cancel</button>
+                        <button onclick="saveLDRNote()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md transition-colors">Save Entry</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-950 text-slate-400 py-6 mt-12 border-t border-slate-900 text-center text-xs">
+    <div class="max-w-7xl mx-auto px-4 space-y-2">
+        <p class="font-medium">CA Final Both Groups November 2026 Revision Guide and Scheduler.</p>
+        <p class="text-[11px] text-slate-600">Built using Tailwind CSS & HTML5 storage. Practice diligently, stay consistent, and succeed!</p>
+    </div>
+</footer>
+
+<script>
+    // Tab switching controller
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.add('hidden');
+        });
+        document.getElementById(tabId).classList.remove('hidden');
+
+        document.querySelectorAll('.nav-tab').forEach(el => {
+            el.classList.remove('text-indigo-600', 'bg-indigo-50/50', 'border-r-4', 'border-indigo-600', 'font-semibold');
+            el.classList.add('font-medium', 'text-slate-600');
+            const badge = el.querySelector('.bg-indigo-100');
+            if (badge) {
+                badge.className = 'text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full';
+                badge.innerText = badge.id === 'sidebarSubjectProgress' ? `${calculateTotalSyllabusProgress().percent}% Done` : 
+                                  badge.id === 'sidebarRoutineProgress' ? `${getRoutineDoneCount()}/9 Block` : 
+                                  badge.id === 'sidebarHoursProgress' ? `${getLoggedDaysCount()}/89 Days` : 'View';
+            }
+        });
+
+        const activeBtn = document.getElementById(`btn-${tabId}`);
+        activeBtn.classList.remove('font-medium', 'text-slate-600');
+        activeBtn.classList.add('text-indigo-600', 'bg-indigo-50/50', 'border-r-4', 'border-indigo-600', 'font-semibold');
+        
+        const activeBadge = activeBtn.querySelector('span:last-child');
+        if (activeBadge) {
+            activeBadge.className = 'text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full';
+            activeBadge.innerText = 'Active';
+        }
+
+        if (tabId === 'tab-hour-log') {
+            renderHourLogGrid();
+            updateHourLogStats();
+        }
+    }
+
+    // Toggle Config section
+    function toggleConfig() {
+        const configSection = document.getElementById('configSection');
+        const chevron = document.getElementById('configChevron');
+        if (configSection.classList.contains('hidden')) {
+            configSection.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+        } else {
+            configSection.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    }
+
+    // Calculate dates & countdowns
+    function initCountdowns() {
+        const todayStr = "2026-06-03"; // simulated reference date
+        const todayDate = new Date(todayStr);
+
+        document.getElementById('currentDateBadge').innerText = "June 3, 2026";
+
+        const prepStart = new Date(state.prepStartDate);
+        const examStart = new Date(state.examStartDate);
+
+        const diffToStart = Math.ceil((prepStart - todayDate) / (1000 * 60 * 60 * 24));
+        const diffToExam = Math.ceil((examStart - todayDate) / (1000 * 60 * 60 * 24));
+
+        const startEl = document.getElementById('countdownToStart');
+        if (diffToStart > 0) {
+            startEl.innerText = `${diffToStart} Days`;
+            startEl.className = "text-2xl font-black text-slate-800";
+        } else if (diffToStart === 0) {
+            startEl.innerText = "TODAY!";
+            startEl.className = "text-xl font-black text-emerald-600 animate-pulse";
+        } else {
+            startEl.innerText = "Active";
+            startEl.className = "text-xl font-black text-indigo-600";
+        }
+
+        const examEl = document.getElementById('countdownToExam');
+        if (diffToExam > 0) {
+            examEl.innerText = `${diffToExam} Days`;
+        } else {
+            examEl.innerText = "EXAMS ON";
+            examEl.className = "text-lg font-black text-red-600";
+        }
+    }
+
+    // Update Date States from inputs
+    function updateDates() {
+        state.prepStartDate = document.getElementById('inputPrepStart').value;
+        state.examStartDate = document.getElementById('inputExamStart').value;
+        saveState();
+        initCountdowns();
+    }
+
+    // Username controller
+    function updateUsername(val) {
+        state.userName = val || "Future Chartered Accountant";
+        saveState();
+    }
+
+    // Toggle All Topics helper
+    function toggleAllTopics(checked) {
+        Object.keys(state.syllabus).forEach(subKey => {
+            state.syllabus[subKey].topics.forEach(t => t.checked = checked);
+        });
+        saveState();
+        renderSubjectChecklists();
+        renderDashboardSubjectCards();
+        updateSyllabusStats();
+    }
+
+    // Toggle single topic check
+    function toggleTopic(subKey, topicId) {
+        const topic = state.syllabus[subKey].topics.find(t => t.id === topicId);
+        if (topic) {
+            topic.checked = !topic.checked;
+            saveState();
+            renderDashboardSubjectCards();
+            updateSyllabusStats();
+            
+            const checkbox = document.getElementById(`chk-${topicId}`);
+            if (checkbox) {
+                checkbox.checked = topic.checked;
+            }
+            updateSingleSubjectProgressUI(subKey);
+        }
+    }
+
+    // Helper to count logged hours days
+    function getLoggedDaysCount() {
+        if (!state.hourLogs) return 0;
+        return Object.values(state.hourLogs).filter(d => d.logged !== null).length;
+    }
+
+    // Calculate individual subject completion percent
+    function getSubjectCompletionPercent(subKey) {
+        const topics = state.syllabus[subKey].topics;
+        const checked = topics.filter(t => t.checked).length;
+        return Math.round((checked / topics.length) * 100);
+    }
+
+    // Calculate overall syllabus checked percent
+    function calculateTotalSyllabusProgress() {
+        let total = 0;
+        let checked = 0;
+        Object.keys(state.syllabus).forEach(subKey => {
+            total += state.syllabus[subKey].topics.length;
+            checked += state.syllabus[subKey].topics.filter(t => t.checked).length;
+        });
+        return {
+            percent: total > 0 ? Math.round((checked / total) * 100) : 0,
+            checked: checked,
+            total: total
+        };
+    }
+
+    // Update syllabus progress elements globally
+    function updateSyllabusStats() {
+        const stats = calculateTotalSyllabusProgress();
+        document.getElementById('overallProgressText').innerText = `${stats.percent}%`;
+        document.getElementById('overallProgressBar').style.width = `${stats.percent}%`;
+        document.getElementById('overallCheckedCount').innerText = `${stats.checked} of ${stats.total} topics checked`;
+        
+        const sideSub = document.getElementById('sidebarSubjectProgress');
+        if (sideSub) sideSub.innerText = `${stats.percent}% Done`;
+    }
+
+    // Phase Progress controllers
+    function updatePhaseProgress(phaseId, days) {
+        const phase = state.phases.find(p => p.id === `p${phaseId}`);
+        if (phase) {
+            phase.completedDays = Math.min(phase.totalDays, Math.max(0, parseInt(days) || 0));
+            saveState();
+        }
+    }
+
+    // Initialize inputs for phases
+    function initPhaseDaysInputs() {
+        state.phases.forEach((p, index) => {
+            const input = document.getElementById(`phase${index + 1}_days`);
+            if (input) {
+                input.value = p.completedDays;
+            }
+        });
+    }
+</script>
+
+<script>
+    // Helper to calculate target hours on an ascending daily basis
+    function getTargetHoursForDay(dayIndex) {
+        if (dayIndex <= 15) return 8;       // Days 1-15: 8 hours (Habit Building)
+        if (dayIndex <= 42) return 10;      // Days 16-42: 10 hours (Comprehensive Revision)
+        if (dayIndex <= 72) return 11;      // Days 43-72: 11 hours (Speed Revision / MCQs)
+        if (dayIndex <= 88) return 12;      // Days 73-88: 12 hours (Mock Tests / Simulation)
+        return 13;                          // Day 89: 13 hours (Peak pre-exam sprint)
+    }
+
+    // Populate log dropdown targets
+    function populateLogDayDropdown() {
+        const select = document.getElementById('logDaySelect');
+        if (!select) return;
+        select.innerHTML = '';
+        for (let i = 1; i <= 89; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            const targetHr = getTargetHoursForDay(i);
+            const status = state.hourLogs && state.hourLogs[`day_${i}`] && state.hourLogs[`day_${i}`].logged !== null 
+                ? `(Logged: ${state.hourLogs[`day_${i}`].logged}h)` 
+                : `(Target: ${targetHr}h)`;
+            opt.innerText = `Day ${i} ${status}`;
+            select.appendChild(opt);
+        }
+    }
+
+    // Sync input values on changing selection
+    function onLogDayChange() {
+        const select = document.getElementById('logDaySelect');
+        const input = document.getElementById('logHoursInput');
+        const indicator = document.getElementById('logTargetIndicator');
+        if (!select || !input) return;
+
+        const dayVal = parseInt(select.value) || 1;
+        const target = getTargetHoursForDay(dayVal);
+        indicator.innerText = `Target: ${target}h`;
+
+        const key = `day_${dayVal}`;
+        if (state.hourLogs && state.hourLogs[key] && state.hourLogs[key].logged !== null) {
+            input.value = state.hourLogs[key].logged;
+        } else {
+            input.value = '';
+        }
+        updateMotivationCard(dayVal);
+    }
+
+    // Update motivational dynamic copy depending on user target compliance
+    function updateMotivationCard(dayVal) {
+        const mCard = document.getElementById('motivationCard');
+        const emoji = document.getElementById('motivationEmoji');
+        const title = document.getElementById('motivationTitle');
+        const txt = document.getElementById('motivationText');
+        if (!mCard) return;
+
+        const key = `day_${dayVal}`;
+        const logData = state.hourLogs[key];
+        
+        if (logData && logData.logged !== null) {
+            mCard.classList.remove('hidden');
+            const diff = logData.logged - logData.target;
+            if (diff >= 0) {
+                emoji.innerText = '🏆';
+                title.innerText = `Day ${dayVal} Goal Smashed!`;
+                txt.innerText = `Logged ${logData.logged}h against target of ${logData.target}h. Exceptional commitment to November 2026!`;
+            } else if (diff >= -2) {
+                emoji.innerText = '⚡';
+                title.innerText = 'Highly Focused Try!';
+                txt.innerText = `Logged ${logData.logged}h. You are so close to the target of ${logData.target}h. Push a tiny bit more tomorrow!`;
+            } else {
+                emoji.innerText = '🎯';
+                title.innerText = 'Stamina Builder';
+                txt.innerText = `Logged ${logData.logged}h. The target is ${logData.target}h. Block notifications and try single-tasking.`;
+            }
+        } else {
+            mCard.classList.add('hidden');
+        }
+    }
+
+    // Store log item to local state
+    function saveHourLog() {
+        const select = document.getElementById('logDaySelect');
+        const input = document.getElementById('logHoursInput');
+        if (!select || !input) return;
+
+        const dayVal = parseInt(select.value) || 1;
+        const hours = parseFloat(input.value);
+
+        if (isNaN(hours) || hours < 0 || hours > 24) {
+            return;
+        }
+
+        const key = `day_${dayVal}`;
+        const target = getTargetHoursForDay(dayVal);
+        
+        if (!state.hourLogs) state.hourLogs = {};
+        state.hourLogs[key] = { logged: hours, target: target };
+        
+        saveState();
+        populateLogDayDropdown();
+        select.value = dayVal; 
+        onLogDayChange();
+        renderHourLogGrid();
+        updateHourLogStats();
+    }
+
+    // Render chronological matrix checklist visual blocks
+    function renderHourLogGrid() {
+        const grid = document.getElementById('logDaysGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        for (let i = 1; i <= 89; i++) {
+            const key = `day_${i}`;
+            const data = state.hourLogs[key] || { logged: null, target: getTargetHoursForDay(i) };
+            
+            let colorCl = 'bg-white text-slate-400 border border-slate-200 hover:border-slate-300';
+            let tooltip = `Day ${i} (Unlogged) - Target: ${data.target}h`;
+
+            if (data.logged !== null) {
+                if (data.logged >= data.target) {
+                    colorCl = 'bg-emerald-500 text-white border border-emerald-600 hover:bg-emerald-600';
+                } else if (data.logged > 0) {
+                    colorCl = 'bg-amber-500 text-white border border-amber-600 hover:bg-amber-600';
+                } else {
+                    colorCl = 'bg-rose-500 text-white border border-rose-600 hover:bg-rose-600';
+                }
+                tooltip = `Day ${i} - Logged: ${data.logged}h / Target: ${data.target}h`;
+            }
+
+            grid.innerHTML += `
+                <button onclick="selectLogDay(${i})" title="${tooltip}" class="${colorCl} rounded-xl py-2 px-1 text-[10px] font-bold text-center transition-all shadow-sm focus:outline-none shrink-0 min-h-[46px]">
+                    D${i}
+                    <span class="block text-[8px] opacity-80 font-semibold">${data.logged !== null ? data.logged + 'h' : data.target + 'h'}</span>
+                </button>
+            `;
+        }
+    }
+
+    function selectLogDay(dayVal) {
+        const select = document.getElementById('logDaySelect');
+        if (select) {
+            select.value = dayVal;
+            onLogDayChange();
+            select.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // Calculate performance logs and overall average metrics
+    function updateHourLogStats() {
+        if (!state.hourLogs) return;
+
+        let totalHours = 0;
+        let loggedCount = 0;
+
+        for (let i = 1; i <= 89; i++) {
+            const data = state.hourLogs[`day_${i}`];
+            if (data && data.logged !== null) {
+                totalHours += data.logged;
+                loggedCount++;
+            }
+        }
+
+        const avg = loggedCount > 0 ? (totalHours / loggedCount).toFixed(1) : "0.0";
+        
+        document.getElementById('avgStudyHours').innerText = `${avg}h`;
+        document.getElementById('totalLoggedDays').innerText = `${loggedCount} of 89 days logged`;
+
+        const sideHours = document.getElementById('sidebarHoursProgress');
+        if (sideHours) {
+            sideHours.innerText = `${loggedCount}/89 Days`;
+        }
+    }
+
+    // Reset daily logged data
+    function resetHourLogs() {
+        state.hourLogs = {};
+        for (let i = 1; i <= 89; i++) {
+            state.hourLogs[`day_${i}`] = { logged: null, target: getTargetHoursForDay(i) };
+        }
+        saveState();
+        populateLogDayDropdown();
+        onLogDayChange();
+        renderHourLogGrid();
+        updateHourLogStats();
+    }
+</script>
+
+<script>
+    // Map colors to CSS styles
+    const colorClasses = {
+        indigo: { bg: 'bg-indigo-50', text: 'text-indigo-800', border: 'border-indigo-100', accent: 'bg-indigo-600' },
+        blue: { bg: 'bg-blue-50', text: 'text-blue-800', border: 'border-blue-100', accent: 'bg-blue-600' },
+        emerald: { bg: 'bg-emerald-50', text: 'text-emerald-800', border: 'border-emerald-100', accent: 'bg-emerald-600' },
+        orange: { bg: 'bg-orange-50', text: 'text-orange-800', border: 'border-orange-100', accent: 'bg-orange-600' },
+        rose: { bg: 'bg-rose-50', text: 'text-rose-800', border: 'border-rose-100', accent: 'bg-rose-600' },
+        purple: { bg: 'bg-purple-50', text: 'text-purple-800', border: 'border-purple-100', accent: 'bg-purple-600' }
+    };
+
+    // Render Mini Cards in the Main Dashboard
+    function renderDashboardSubjectCards() {
+        const container = document.getElementById('dashboardSubjectCards');
+        container.innerHTML = '';
+
+        Object.keys(state.syllabus).forEach(key => {
+            const paper = state.syllabus[key];
+            const pct = getSubjectCompletionPercent(key);
+            const total = paper.topics.length;
+            const checked = paper.topics.filter(t => t.checked).length;
+            const cl = colorClasses[paper.color] || colorClasses.indigo;
+
+            container.innerHTML += `
+                <div class="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-1 mb-2">
+                            <span class="${cl.bg} ${cl.text} text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">${key}</span>
+                            <span class="text-xs font-bold text-slate-800">${pct}%</span>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-700 leading-tight mb-2">${paper.title}</h4>
+                    </div>
+                    
+                    <div class="space-y-1.5 pt-2 border-t border-slate-50">
+                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="${cl.accent} h-full" style="width: ${pct}%"></div>
+                        </div>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400">
+                            <span>${checked}/${total} Chapters</span>
+                            <button onclick="switchTab('tab-subjects'); setTimeout(() => expandAccordion('${key}'), 100)" class="text-indigo-600 font-bold hover:underline">Study</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Render interactive accordion style syllabus checklist
+    function renderSubjectChecklists() {
+        const container = document.getElementById('subjectListsAccordion');
+        container.innerHTML = '';
+
+        Object.keys(state.syllabus).forEach(key => {
+            const paper = state.syllabus[key];
+            const cl = colorClasses[paper.color] || colorClasses.indigo;
+            const pct = getSubjectCompletionPercent(key);
+
+            let topicsHTML = '';
+            paper.topics.forEach(t => {
+                const badgeColor = t.wt === 'High' ? 'bg-rose-50 text-rose-700 border-rose-100' : 
+                                   t.wt === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-slate-50 text-slate-600 border-slate-200';
+                
+                topicsHTML += `
+                    <div class="flex items-start sm:items-center justify-between gap-3 py-2 px-1 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-2">
+                        <div class="flex items-start sm:items-center gap-2.5">
+                            <input type="checkbox" id="chk-${t.id}" onchange="toggleTopic('${key}', '${t.id}')" ${t.checked ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 mt-0.5 sm:mt-0 cursor-pointer">
+                            <label for="chk-${t.id}" class="text-xs font-medium text-slate-700 cursor-pointer select-none leading-relaxed">${t.text}</label>
+                        </div>
+                        <span class="text-[9px] font-bold border px-1.5 py-0.5 rounded ${badgeColor} shrink-0">${t.wt} Yield</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML += `
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm" id="accordion-card-${key}">
+                    <button onclick="toggleAccordion('${key}')" class="w-full px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-white hover:bg-slate-50/50 transition-colors">
+                        <div class="flex items-center space-x-3 text-left">
+                            <div class="${cl.bg} ${cl.text} w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs uppercase shrink-0">${key}</div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800 leading-tight">${paper.title}</h4>
+                                <p class="text-[10px] text-slate-400 font-semibold" id="accord-count-${key}">${paper.topics.filter(t => t.checked).length} of ${paper.topics.length} topics mastered</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold text-slate-700" id="accord-pct-${key}">${pct}%</span>
+                                <div class="w-20 bg-slate-100 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                    <div class="${cl.accent} h-full" id="accord-bar-${key}" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                            <svg id="chevron-${key}" class="h-4.5 w-4.5 text-slate-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </button>
+                    
+                    <div id="content-${key}" class="hidden px-5 pb-4 pt-1 border-t border-slate-100 space-y-1">
+                        ${topicsHTML}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Toggle single accordion state
+    function toggleAccordion(key) {
+        const content = document.getElementById(`content-${key}`);
+        const chevron = document.getElementById(`chevron-${key}`);
+        
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+        } else {
+            content.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    }
+
+    // Force expand an accordion when navigated directly
+    function expandAccordion(key) {
+        const content = document.getElementById(`content-${key}`);
+        const chevron = document.getElementById(`chevron-${key}`);
+        if (content) {
+            content.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+            document.getElementById(`accordion-card-${key}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Quick single-subject rendering speed up on checkbox toggle
+    function updateSingleSubjectProgressUI(key) {
+        const paper = state.syllabus[key];
+        const pct = getSubjectCompletionPercent(key);
+        const checked = paper.topics.filter(t => t.checked).length;
+
+        const countEl = document.getElementById(`accord-count-${key}`);
+        const pctEl = document.getElementById(`accord-pct-${key}`);
+        const barEl = document.getElementById(`accord-bar-${key}`);
+
+        if (countEl) countEl.innerText = `${checked} of ${paper.topics.length} topics mastered`;
+        if (pctEl) pctEl.innerText = `${pct}%`;
+        if (barEl) barEl.style.width = `${pct}%`;
+    }
+</script>
+
+<script>
+    // Render dynamic Daily Routine Checklist
+    function renderDailyRoutine() {
+        const container = document.getElementById('routineListContainer');
+        container.innerHTML = '';
+
+        state.routine.forEach(item => {
+            const isDone = item.done;
+            container.innerHTML += `
+                <div class="relative flex items-start gap-4 p-4 rounded-xl border ${isDone ? 'border-indigo-100 bg-indigo-50/20' : 'border-slate-100 bg-white'} hover:shadow-sm transition-all">
+                    <div class="absolute -left-[31px] top-6 w-3 h-3 rounded-full border-2 border-indigo-400 bg-white z-10"></div>
+                    <span class="text-xl shrink-0 p-1.5 bg-slate-50 rounded-lg select-none">${item.icon}</span>
+                    <div class="flex-1 min-w-0 space-y-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-bold text-indigo-700 tracking-wide">${item.time}</span>
+                            <input type="checkbox" onchange="toggleRoutine('${item.id}')" ${isDone ? 'checked' : ''} class="w-4.5 h-4.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer">
+                        </div>
+                        <p class="text-xs font-semibold ${isDone ? 'text-slate-400 line-through' : 'text-slate-800'} leading-relaxed">${item.activity}</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        updateRoutineProgressMetrics();
+    }
+
+    // Toggle a routine block done status
+    function toggleRoutine(id) {
+        const item = state.routine.find(r => r.id === id);
+        if (item) {
+            item.done = !item.done;
+            saveState();
+            renderDailyRoutine();
+        }
+    }
+
+    // Calculate done counters
+    function getRoutineDoneCount() {
+        return state.routine.filter(r => r.done).length;
+    }
+
+    function updateRoutineProgressMetrics() {
+        const doneCount = getRoutineDoneCount();
+        const total = state.routine.length;
+        const pct = Math.round((doneCount / total) * 100);
+
+        document.getElementById('routineProgressPercent').innerText = `${pct}%`;
+        document.getElementById('routineProgressFraction').innerText = `${doneCount} of ${total} blocks completed`;
+        
+        const sideRoutine = document.getElementById('sidebarRoutineProgress');
+        if (sideRoutine) {
+            sideRoutine.innerText = `${doneCount}/9 Block`;
+        }
+    }
+
+    // Reset daily checkboxes
+    function resetDailyRoutine() {
+        state.routine.forEach(r => r.done = false);
+        saveState();
+        renderDailyRoutine();
+    }
+
+    // --- LDR NOTES CONTROLLER ---
+    let currentNoteFilter = 'all';
+
+    function toggleAddNoteModal(show) {
+        const modal = document.getElementById('addNoteModal');
+        if (show) {
+            modal.classList.remove('hidden');
+        } else {
+            modal.classList.add('hidden');
+            document.getElementById('newNoteTitle').value = '';
+            document.getElementById('newNoteText').value = '';
+        }
+    }
+
+    // Save custom LDR Note
+    function saveLDRNote() {
+        const subject = document.getElementById('newNoteSubject').value;
+        const title = document.getElementById('newNoteTitle').value.trim();
+        const text = document.getElementById('newNoteText').value.trim();
+
+        if (!title || !text) {
+            return;
+        }
+
+        const newEntry = {
+            id: Date.now(),
+            subject: subject,
+            title: title,
+            text: text
+        };
+
+        state.ldrNotes.unshift(newEntry);
+        saveState();
+        toggleAddNoteModal(false);
+        renderLDRNotes();
+        updateLDRSidebarBadge();
+    }
+
+    // Delete single LDR Note
+    function deleteNote(id) {
+        state.ldrNotes = state.ldrNotes.filter(n => n.id !== id);
+        saveState();
+        renderLDRNotes();
+        updateLDRSidebarBadge();
+    }
+
+    function updateLDRSidebarBadge() {
+        const badge = document.getElementById('sidebarLDRCount');
+        if (badge) {
+            badge.innerText = `${state.ldrNotes.length} Saved`;
+        }
+    }
+
+    // Filter LDR Notes
+    function filterNotes(sub) {
+        currentNoteFilter = sub;
+        document.querySelectorAll('.note-filter').forEach(btn => {
+            btn.className = "note-filter bg-white text-slate-600 hover:bg-slate-100 text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 transition-all";
+        });
+        
+        const activeBtn = document.getElementById(`btn-note-${sub}`);
+        if (activeBtn) {
+            activeBtn.className = "note-filter bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all shadow-sm";
+        }
+        renderLDRNotes();
+    }
+
+    // Render Notebook Cards
+    function renderLDRNotes() {
+        const container = document.getElementById('notesGrid');
+        container.innerHTML = '';
+
+        const filtered = currentNoteFilter === 'all' ? state.ldrNotes : state.ldrNotes.filter(n => n.subject === currentNoteFilter);
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center text-slate-400">
+                    <p class="font-bold text-sm">No LDR entries found for this category.</p>
+                    <p class="text-[11px] mt-1">Start by clicking 'Add New LDR Entry' to construct your 1.5-day study cheat sheets!</p>
+                </div>
+            `;
+            return;
+        }
+
+        filtered.forEach(note => {
+            const paperData = state.syllabus[note.subject] || { title: note.subject, color: 'indigo' };
+            const cl = colorClasses[paperData.color] || colorClasses.indigo;
+
+            container.innerHTML += `
+                <div class="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-3">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="${cl.bg} ${cl.text} text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase shrink-0">${note.subject}</span>
+                            <button onclick="deleteNote(${note.id})" class="text-slate-300 hover:text-red-500 transition-colors p-1" title="Delete entry">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-800 leading-snug">${note.title}</h4>
+                        <p class="text-[11px] text-slate-500 font-medium whitespace-pre-wrap leading-relaxed">${note.text}</p>
+                    </div>
+                </div>
+            `;
+        });
+    }
+</script>
+
+<script>
+    // Initialize the whole Dashboard App on page load
+    window.onload = function() {
+        document.getElementById('inputPrepStart').value = state.prepStartDate;
+        document.getElementById('inputExamStart').value = state.examStartDate;
+        document.getElementById('usernameInput').value = state.userName;
+
+        initCountdowns();
+        initPhaseDaysInputs();
+        renderDashboardSubjectCards();
+        renderSubjectChecklists();
+        renderDailyRoutine();
+        renderLDRNotes();
+        updateSyllabusStats();
+        updateLDRSidebarBadge();
+
+        populateLogDayDropdown();
+        onLogDayChange();
+        renderHourLogGrid();
+        updateHourLogStats();
+    }
+</script>
+
+</body>
+</html>
