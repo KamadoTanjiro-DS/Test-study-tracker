@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Final G2 Ultimate Revision Engine</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono for code elements -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            dt: '#6366f1',     /* Indigo for Direct Tax */
+                            idt: '#10b981',    /* Emerald for Indirect Tax */
+                            ibs: '#f59e0b',    /* Amber for Integrated Business Solutions */
+                            accent: '#ec4899'  /* Pink accents */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom scrollbar for premium aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+<div class="w-full flex flex-col lg:flex-row min-h-screen">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-full lg:w-72 bg-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col shrink-0">
+        <!-- Sidebar Brand Header -->
+        <div class="p-6 border-b border-slate-800">
+            <div class="flex items-center space-x-3">
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-graduation-cap text-lg text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-sm tracking-wider uppercase bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                        CA Final G2
+                    </h1>
+                    <span class="text-xs text-indigo-400 font-medium">Revision Engine v2.0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Progress Widget -->
+        <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/50">
+            <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Overall Syllabus Progress</span>
+            <div class="mt-2 flex items-center justify-between">
+                <span class="text-2xl font-bold font-mono text-indigo-400" id="sidebar-overall-pct">0%</span>
+                <span class="text-xs text-slate-400" id="sidebar-overall-ratio">0/153 items</span>
+            </div>
+            <div class="w-full bg-slate-850 rounded-full h-1.5 mt-2 overflow-hidden border border-slate-800">
+                <div id="sidebar-progress-bar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu Links -->
+        <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 text-white bg-indigo-600/90 shadow-md shadow-indigo-900/20">
+                <i class="fa-solid fa-gauge-high text-indigo-200 w-5"></i>
+                <span>Study Dashboard</span>
+            </button>
+            <button onclick="switchTab('tracker')" id="nav-tracker" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:bg-slate-850 hover:text-white">
+                <i class="fa-solid fa-table-list text-slate-400 w-5"></i>
+                <span>Chapter-Wise Tracker</span>
+            </button>
+            <button onclick="switchTab('planner')" id="nav-planner" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:bg-slate-850 hover:text-white">
+                <i class="fa-solid fa-calendar-day text-slate-400 w-5"></i>
+                <span>3-Month Study Planner</span>
+            </button>
+            <button onclick="switchTab('ledger')" id="nav-ledger" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:bg-slate-850 hover:text-white">
+                <i class="fa-solid fa-book-bookmark text-slate-400 w-5"></i>
+                <span>Tricky Adjustments Ledger</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:bg-slate-850 hover:text-white">
+                <i class="fa-solid fa-sliders text-slate-400 w-5"></i>
+                <span>Backup & Settings</span>
+            </button>
+        </nav>
+
+        <!-- Exam Countdown footer -->
+        <div class="p-6 bg-slate-950 border-t border-slate-800 mt-auto">
+            <div class="flex items-center space-x-2 text-rose-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
+                <span>November 2026 Countdown</span>
+            </div>
+            <div class="grid grid-cols-3 gap-1 text-center">
+                <div class="bg-slate-900 p-2 rounded border border-slate-800">
+                    <div id="countdown-days" class="text-lg font-mono font-bold text-white">0</div>
+                    <div class="text-[9px] text-slate-500 uppercase font-semibold">Days</div>
+                </div>
+                <div class="bg-slate-900 p-2 rounded border border-slate-800">
+                    <div id="countdown-hours" class="text-lg font-mono font-bold text-white">0</div>
+                    <div class="text-[9px] text-slate-500 uppercase font-semibold">Hrs</div>
+                </div>
+                <div class="bg-slate-900 p-2 rounded border border-slate-800">
+                    <div id="countdown-mins" class="text-lg font-mono font-bold text-white">0</div>
+                    <div class="text-[9px] text-slate-500 uppercase font-semibold">Mins</div>
+                </div>
+            </div>
+            <!-- Interactive Date Simulation -->
+            <div class="mt-4 pt-4 border-t border-slate-850">
+                <label for="simulated-date" class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Simulate Date (Test Pacing)</label>
+                <input type="date" id="simulated-date" onchange="updateSimulatedDate()" class="w-full bg-slate-900 text-xs border border-slate-800 rounded p-1 text-slate-300 focus:outline-none focus:border-indigo-500">
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Workspace Content Area -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-slate-950">
+        
+        <!-- Header Controls -->
+        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-extrabold text-white" id="current-tab-title">Study Dashboard</h2>
+                <p class="text-xs text-slate-400 mt-1" id="current-tab-desc">Comprehensive status review and planning dashboard.</p>
+            </div>
+            <!-- Fast Status Action -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="flex bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-xs font-medium space-x-1">
+                    <span class="px-2.5 py-1 rounded bg-indigo-600/20 text-indigo-400 border border-indigo-500/10">DT: Direct Tax</span>
+                    <span class="px-2.5 py-1 rounded bg-emerald-600/20 text-emerald-400 border border-emerald-500/10">IDT: Indirect Tax</span>
+                    <span class="px-2.5 py-1 rounded bg-amber-600/20 text-amber-400 border border-amber-500/10">IBS: Open Book</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Dashboard Container -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6" id="main-content-window">
+            
+            <!-- TAB: DASHBOARD -->
+            <div id="tab-dashboard" class="space-y-6">
+                <!-- Quick Pacing Warning Card -->
+                <div id="pacing-banner" class="bg-indigo-950/40 border border-indigo-900/60 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
+                            <i class="fa-solid fa-circle-info text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-indigo-200" id="banner-pacing-title">Current Phase: August Warm-up (Slow Pace)</h4>
+                            <p class="text-xs text-indigo-300/80" id="banner-pacing-desc">Focus on understanding core sums. Plan for 4 to 5 study hours daily.</p>
+                        </div>
+                    </div>
+                    <button onclick="switchTab('planner')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 transition text-xs font-semibold rounded-lg text-white shrink-0 shadow shadow-indigo-600/30">
+                        View Planner <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Three revision tracks cards row -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Revision 1 progress card -->
+                    <div class="glass-card rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-5">
+                            <i class="fa-solid fa-rotate-right text-[100px] text-indigo-500"></i>
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Revision 1 Progress</span>
+                            <span class="px-2 py-0.5 text-[10px] rounded font-bold bg-indigo-950 border border-indigo-900 text-indigo-400">August - Sept</span>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <h3 class="text-3xl font-extrabold font-mono text-white" id="rev1-count">0%</h3>
+                                <p class="text-xs text-slate-400 mt-1" id="rev1-fraction">0 of 51 chapters</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-indigo-400" id="rev1-sums-percentage">0% Sums Solved</span>
+                                <div class="w-24 bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                    <div id="rev1-sums-bar" class="bg-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revision 2 progress card -->
+                    <div class="glass-card rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-5">
+                            <i class="fa-solid fa-bolt text-[100px] text-emerald-500"></i>
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Revision 2 Progress</span>
+                            <span class="px-2 py-0.5 text-[10px] rounded font-bold bg-emerald-950 border border-emerald-900 text-emerald-400">Oct (Speed)</span>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <h3 class="text-3xl font-extrabold font-mono text-white" id="rev2-count">0%</h3>
+                                <p class="text-xs text-slate-400 mt-1" id="rev2-fraction">0 of 51 chapters</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-emerald-400" id="rev2-score-avg">0/100 Avg Mock</span>
+                                <div class="w-24 bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                    <div id="rev2-score-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revision 3 progress card -->
+                    <div class="glass-card rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-5">
+                            <i class="fa-solid fa-bullseye text-[100px] text-pink-500"></i>
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Revision 3 Progress</span>
+                            <span class="px-2 py-0.5 text-[10px] rounded font-bold bg-pink-950 border border-pink-900 text-pink-400">Oct-End (LDR)</span>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <h3 class="text-3xl font-extrabold font-mono text-white" id="rev3-count">0%</h3>
+                                <p class="text-xs text-slate-400 mt-1" id="rev3-fraction">0 of 51 chapters</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-pink-400" id="rev3-tricky-ratio">0/51 Note Ready</span>
+                                <div class="w-24 bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                                    <div id="rev3-tricky-bar" class="bg-pink-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject-Wise Progress Breakdowns -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Direct Tax (DT) Segment Card -->
+                    <div class="glass-card rounded-xl p-6 border-l-4 border-l-indigo-500 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-2">
+                                    <span class="p-2 rounded bg-indigo-500/10 text-indigo-400"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                                    <h3 class="font-extrabold text-base text-white">Paper 4: Direct Tax (DT)</h3>
+                                </div>
+                                <span id="dt-completed-pct" class="font-mono text-xs font-bold text-indigo-400 bg-indigo-950 px-2 py-1 rounded">0% Done</span>
+                            </div>
+                            <div class="space-y-3 my-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Rev 1 Completed</span>
+                                    <span id="dt-rev1-fraction" class="font-bold text-slate-200">0/19</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="dt-rev1-progress" class="bg-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Rev 2 Completed</span>
+                                    <span id="dt-rev2-fraction" class="font-bold text-slate-200">0/19</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="dt-rev2-progress" class="bg-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Rev 3 (LDR) Completed</span>
+                                    <span id="dt-rev3-fraction" class="font-bold text-slate-200">0/19</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="dt-rev3-progress" class="bg-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="openTrackerAndFilter('DT')" class="w-full py-2 bg-indigo-950/60 hover:bg-indigo-900 transition text-xs font-semibold rounded-lg text-indigo-300 border border-indigo-900 mt-4">
+                            Review DT Chapters <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+
+                    <!-- Indirect Tax (IDT) Segment Card -->
+                    <div class="glass-card rounded-xl p-6 border-l-4 border-l-emerald-500 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-2">
+                                    <span class="p-2 rounded bg-emerald-500/10 text-emerald-400"><i class="fa-solid fa-landmark-dome"></i></span>
+                                    <h3 class="font-extrabold text-base text-white">Paper 5: Indirect Tax (IDT)</h3>
+                                </div>
+                                <span id="idt-completed-pct" class="font-mono text-xs font-bold text-emerald-400 bg-emerald-950 px-2 py-1 rounded">0% Done</span>
+                            </div>
+                            <div class="space-y-3 my-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Rev 1 Completed</span>
+                                    <span id="idt-rev1-fraction" class="font-bold text-slate-200">0/22</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="idt-rev1-progress" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Rev 2 Completed</span>
+                                    <span id="idt-rev2-fraction" class="font-bold text-slate-200">0/22</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="idt-rev2-progress" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Rev 3 (LDR) Completed</span>
+                                    <span id="idt-rev3-fraction" class="font-bold text-slate-200">0/22</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="idt-rev3-progress" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="openTrackerAndFilter('IDT')" class="w-full py-2 bg-emerald-950/60 hover:bg-emerald-900 transition text-xs font-semibold rounded-lg text-emerald-300 border border-emerald-900 mt-4">
+                            Review IDT Chapters <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+
+                    <!-- Integrated Business Solutions (IBS) Segment Card -->
+                    <div class="glass-card rounded-xl p-6 border-l-4 border-l-amber-500 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-2">
+                                    <span class="p-2 rounded bg-amber-500/10 text-amber-400"><i class="fa-solid fa-puzzle-piece"></i></span>
+                                    <h3 class="font-extrabold text-base text-white">Paper 6: IBS Cases</h3>
+                                </div>
+                                <span id="ibs-completed-pct" class="font-mono text-xs font-bold text-amber-400 bg-amber-950 px-2 py-1 rounded">0% Done</span>
+                            </div>
+                            <div class="space-y-3 my-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Case Studies Solved</span>
+                                    <span id="ibs-rev1-fraction" class="font-bold text-slate-200">0/10</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="ibs-rev1-progress" class="bg-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Re-run Solved</span>
+                                    <span id="ibs-rev2-fraction" class="font-bold text-slate-200">0/10</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="ibs-rev2-progress" class="bg-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Index Sheet Formulated</span>
+                                    <span id="ibs-index-fraction" class="font-bold text-slate-200">0/10</span>
+                                </div>
+                                <div class="w-full bg-slate-850 h-1 rounded-full overflow-hidden">
+                                    <div id="ibs-index-progress" class="bg-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="openTrackerAndFilter('IBS')" class="w-full py-2 bg-amber-950/60 hover:bg-amber-900 transition text-xs font-semibold rounded-lg text-amber-300 border border-amber-900 mt-4">
+                            Review Case Papers <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Practical Tips Carousel Widget -->
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="font-bold text-sm uppercase text-slate-400 tracking-wider mb-4"><i class="fa-solid fa-lightbulb text-indigo-400 mr-2"></i>Active Strategy Rules for Sum-Solving</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+                            <span class="text-xs font-bold text-indigo-400 block mb-2"><i class="fa-solid fa-square-check mr-1.5"></i>The "✔" (Tick) Rule</span>
+                            <p class="text-xs text-slate-300 leading-relaxed">If you solved a comprehensive adjustment easily on the first attempt, skip it during Revision 2 to save valuable speed runs. Keep focused strictly on Category A items.</p>
+                        </div>
+                        <div class="p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+                            <span class="text-xs font-bold text-rose-400 block mb-2"><i class="fa-solid fa-square-xmark mr-1.5"></i>The "✘" (Cross) Rule</span>
+                            <p class="text-xs text-slate-300 leading-relaxed">If you failed or stumbled on a computation, it requires 100% manual re-solving on paper during Phase 2 (September). Write it out completely.</p>
+                        </div>
+                        <div class="p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+                            <span class="text-xs font-bold text-amber-400 block mb-2"><i class="fa-solid fa-star mr-1.5"></i>The "★" (Star) Rule</span>
+                            <p class="text-xs text-slate-300 leading-relaxed">Conceptually sound but tripped over single details (like TDS % or GST Place rules). Copy these unique adjustments directly to your Tricky Adjustments Ledger!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: CHAPTER TRACKER -->
+            <div id="tab-tracker" class="space-y-6 hidden">
+                <!-- Filter Controls -->
+                <div class="glass-card rounded-xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="setTrackerSubject('ALL')" id="btn-subject-all" class="px-4 py-2 text-xs font-bold rounded-lg border border-indigo-500/25 bg-indigo-500/10 text-white transition">All Subjects</button>
+                        <button onclick="setTrackerSubject('DT')" id="btn-subject-dt" class="px-4 py-2 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition">Direct Tax (DT)</button>
+                        <button onclick="setTrackerSubject('IDT')" id="btn-subject-idt" class="px-4 py-2 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition">Indirect Tax (IDT)</button>
+                        <button onclick="setTrackerSubject('IBS')" id="btn-subject-ibs" class="px-4 py-2 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition">IBS Case Studies</button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-1 sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+                            <input type="text" id="chapter-search" oninput="applyTrackerFilters()" placeholder="Search chapters..." class="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 pl-9 pr-4 text-xs text-slate-300 focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <select id="category-filter" onchange="applyTrackerFilters()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
+                            <option value="ALL">All Categories</option>
+                            <option value="A">Category A</option>
+                            <option value="B">Category B</option>
+                            <option value="C">Category C</option>
+                        </select>
+                        <!-- Copy to Clipboard Button for Excel -->
+                        <button onclick="exportCurrentTable()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 transition text-xs font-bold rounded-lg text-white flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/25 shrink-0">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>Copy to Excel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Interactive Table Container -->
+                <div class="glass-card rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-900 border-b border-slate-800 text-slate-300 font-bold uppercase tracking-wider">
+                                    <th class="p-4 w-24">Chapter ID</th>
+                                    <th class="p-4 min-w-[220px]">Topic / Chapter Name</th>
+                                    <th class="p-4 w-28 text-center">ABC Category</th>
+                                    <th class="p-4 w-32 text-center bg-indigo-950/20 border-r border-slate-800">
+                                        Revision 1 <br><span class="text-[9px] font-normal text-slate-400">August/Sept</span>
+                                    </th>
+                                    <th class="p-4 w-36 text-center bg-indigo-950/20 border-r border-slate-800">Sums Solved <br><span class="text-[9px] font-normal text-slate-400">Completed/Total</span></th>
+                                    <th class="p-4 w-32 text-center bg-emerald-950/20 border-r border-slate-800">
+                                        Revision 2 <br><span class="text-[9px] font-normal text-slate-400">Oct - Speed</span>
+                                    </th>
+                                    <th class="p-4 w-32 text-center bg-emerald-950/20 border-r border-slate-800">Mock Score <br><span class="text-[9px] font-normal text-slate-400">Score Out of 100</span></th>
+                                    <th class="p-4 w-32 text-center bg-pink-950/20 border-r border-slate-800">
+                                        Revision 3 <br><span class="text-[9px] font-normal text-slate-400">LDR (Oct End)</span>
+                                    </th>
+                                    <th class="p-4 min-w-[200px]">Tricky Adjustment Log / Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tracker-table-body" class="divide-y divide-slate-850">
+                                <!-- Dynamic JS Generated Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: STUDY PLANNER -->
+            <div id="tab-planner" class="space-y-6 hidden">
+                <!-- Planning Timeline Header -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <button onclick="setPlannerPhase(1)" id="btn-phase-1" class="p-4 rounded-xl border border-indigo-500/20 bg-indigo-600/10 text-left transition duration-200">
+                        <div class="text-[10px] font-extrabold uppercase text-indigo-400">Phase 1 (45 Days)</div>
+                        <div class="text-sm font-bold text-white mt-1">Aug 1 – Sep 15</div>
+                        <div class="text-xs text-slate-400 mt-1">First Comprehensive Revision</div>
+                    </button>
+                    <button onclick="setPlannerPhase(2)" id="btn-phase-2" class="p-4 rounded-xl border border-slate-800 bg-slate-900 text-left hover:border-indigo-500/10 transition duration-200">
+                        <div class="text-[10px] font-extrabold uppercase text-slate-500">Phase 2 (20 Days)</div>
+                        <div class="text-sm font-bold text-slate-200 mt-1">Sep 16 – Oct 5</div>
+                        <div class="text-xs text-slate-400 mt-1">Rapid Revision 2 (Marked)</div>
+                    </button>
+                    <button onclick="setPlannerPhase(3)" id="btn-phase-3" class="p-4 rounded-xl border border-slate-800 bg-slate-900 text-left hover:border-indigo-500/10 transition duration-200">
+                        <div class="text-[10px] font-extrabold uppercase text-slate-500">Phase 3 (19 Days)</div>
+                        <div class="text-sm font-bold text-slate-200 mt-1">Oct 6 – Oct 24</div>
+                        <div class="text-xs text-slate-400 mt-1">Revision 3 + Full Mocks</div>
+                    </button>
+                    <button onclick="setPlannerPhase(4)" id="btn-phase-4" class="p-4 rounded-xl border border-slate-800 bg-slate-900 text-left hover:border-indigo-500/10 transition duration-200">
+                        <div class="text-[10px] font-extrabold uppercase text-slate-500">Phase 4 (7 Days)</div>
+                        <div class="text-sm font-bold text-slate-200 mt-1">Oct 25 – Oct 31</div>
+                        <div class="text-xs text-slate-400 mt-1">LDR Fast Runs</div>
+                    </button>
+                </div>
+
+                <!-- Current Phase Detail View -->
+                <div class="glass-card rounded-xl p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-4 gap-4">
+                        <div>
+                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest" id="planner-detail-subtitle">Phase 1: First Comprehensive Revision</span>
+                            <h3 class="text-lg font-extrabold text-white mt-1" id="planner-detail-title">August 1 – September 15 (45 Days)</h3>
+                        </div>
+                        <div class="bg-slate-950 px-4 py-2 rounded-lg border border-slate-800 text-right">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase block">Daily Momentum hours</span>
+                            <span class="text-lg font-extrabold font-mono text-indigo-400" id="planner-detail-hours">4 - 5 Hours Scale Up</span>
+                        </div>
+                    </div>
+
+                    <!-- Chronological Milestones / Sub-Blocks -->
+                    <div class="space-y-4" id="planner-blocks-container">
+                        <!-- Dynamic planner timeline components injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: TRICKY ADJUSTMENTS LEDGER -->
+            <div id="tab-ledger" class="space-y-6 hidden">
+                <div class="glass-card rounded-xl p-6 space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-800 pb-4 gap-4">
+                        <div>
+                            <h3 class="text-lg font-extrabold text-white">Tricky Adjustments Log (LDR Notebook)</h3>
+                            <p class="text-xs text-slate-400 mt-1">Keep a consolidated notebook for unique tax rules that trip you up during sum solving.</p>
+                        </div>
+                        <!-- Add Adjustment Note button -->
+                        <button onclick="openAdjustmentModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 transition text-xs font-bold rounded-lg text-white flex items-center justify-center space-x-2 shadow shadow-indigo-600/30">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Adjustment Entry</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick ledger filtering tabs -->
+                    <div class="flex space-x-2 border-b border-slate-800 pb-2">
+                        <button onclick="filterLedgerTab('ALL')" id="btn-ledger-all" class="px-3 py-1.5 text-xs font-semibold rounded bg-indigo-600/25 border border-indigo-500/20 text-indigo-300">All Papers</button>
+                        <button onclick="filterLedgerTab('DT')" id="btn-ledger-dt" class="px-3 py-1.5 text-xs font-semibold rounded hover:bg-slate-850 hover:text-white text-slate-400">Direct Tax (DT)</button>
+                        <button onclick="filterLedgerTab('IDT')" id="btn-ledger-idt" class="px-3 py-1.5 text-xs font-semibold rounded hover:bg-slate-850 hover:text-white text-slate-400">Indirect Tax (IDT)</button>
+                    </div>
+
+                    <!-- Live Grid of Adjustments -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="ledger-cards-grid">
+                        <!-- Injected dynamic card adjustments -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SETTINGS & BACKUP -->
+            <div id="tab-settings" class="space-y-6 hidden">
+                <div class="glass-card rounded-xl p-6 space-y-6">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-white">System Settings & Data Backups</h3>
+                        <p class="text-xs text-slate-400 mt-1">Manage and preserve your local study stats, custom notes, and schedule checkboxes.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
+                        <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800 space-y-3">
+                            <span class="p-2.5 rounded bg-indigo-500/10 text-indigo-400 inline-block"><i class="fa-solid fa-cloud-arrow-up text-lg"></i></span>
+                            <h4 class="font-bold text-sm text-slate-200">Export Save File</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">Download a physical backup file of your entire configuration, checklists, and tricky adjustments onto your device.</p>
+                            <button onclick="exportJSONBackup()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 transition text-xs font-bold rounded-lg text-white">Download Save State (.json)</button>
+                        </div>
+
+                        <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800 space-y-3">
+                            <span class="p-2.5 rounded bg-emerald-500/10 text-emerald-400 inline-block"><i class="fa-solid fa-cloud-arrow-down text-lg"></i></span>
+                            <h4 class="font-bold text-sm text-slate-200">Import Save File</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">Restore your chapter progress or checklist schedules from an existing exported configuration file.</p>
+                            <input type="file" id="import-file-selector" class="hidden" accept=".json" onchange="importJSONBackup(event)">
+                            <button onclick="document.getElementById('import-file-selector').click()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 transition text-xs font-bold rounded-lg text-white">Upload Save File</button>
+                        </div>
+
+                        <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800 space-y-3">
+                            <span class="p-2.5 rounded bg-rose-500/10 text-rose-400 inline-block"><i class="fa-solid fa-triangle-exclamation text-lg"></i></span>
+                            <h4 class="font-bold text-sm text-slate-200">Clear Storage Cache</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">Permanently reset all tables, mock scores, chapter checklists, and planner stats back to original baseline settings.</p>
+                            <button onclick="resetAppDatabase()" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-800/40 transition text-xs font-bold rounded-lg">Reset Storage System</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Dynamic Overlay Modals -->
+
+<!-- 1. Tricky Adjustment Creation Modal -->
+<div id="adjustment-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+        <button onclick="closeAdjustmentModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="text-base font-extrabold text-white mb-4" id="modal-ledger-title">Add Tricky Adjustment Entry</h3>
+        <form onsubmit="saveAdjustmentLedger(event)" class="space-y-4">
+            <input type="hidden" id="edit-adj-index" value="">
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subject</label>
+                <select id="adj-subject" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <option value="DT">Direct Tax (DT)</option>
+                    <option value="IDT">Indirect Tax (IDT)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Relevant Chapter</label>
+                <select id="adj-chapter-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <!-- Dynamic subject options filled dynamically -->
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Adjustment Summary</label>
+                <input type="text" id="adj-summary" required placeholder="e.g., Sec 43B(h) payment rules to MSMEs" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Adjustment / Provision Detail</label>
+                <textarea id="adj-details" rows="4" required placeholder="Describe the adjustment, legal tax rule, or workaround formulas clearly..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500"></textarea>
+            </div>
+            <div class="flex gap-2 justify-end pt-2">
+                <button type="button" onclick="closeAdjustmentModal()" class="px-4 py-2 bg-slate-850 hover:bg-slate-800 text-xs font-semibold rounded-lg text-slate-400 transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold rounded-lg text-white transition">Save Entry</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Toasts Notification System -->
+<div id="toast-container" class="fixed bottom-6 right-6 space-y-2 z-50"></div>
+
+
+<script>
+    // Fallback safe LocalStorage handlers for sandboxed iFrames
+    let memoryBackupStorage = {};
+
+    function safeGetItem(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.warn("Storage read blocked by context sandbox, reading from session backup state.", e);
+            return memoryBackupStorage[key] || null;
+        }
+    }
+
+    function safeSetItem(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.warn("Storage write blocked by context sandbox, writing to session backup state.", e);
+            memoryBackupStorage[key] = value;
+        }
+    }
+
+    // State management and initial tracking database structures
+    let trackerDatabase = {};
+    let studyPlannerProgress = {};
+    let trickyAdjustmentsLedger = [];
+    let activeTab = 'dashboard';
+    let activeTrackerSubject = 'ALL';
+    let activePlannerPhase = 1;
+    let activeLedgerSubject = 'ALL';
+    
+    // Simulate current date state for student to test pacing schedule
+    let simulatedSystemDate = new Date("2026-08-01"); // Defaults to August 1st, 2026
+
+    // Complete CA Syllabus definition structured strictly for rapid iteration
+    const syllabusData = {
+        DT: [
+            { id: "DT-01", name: "Basic Concepts, Rates of Tax & Surcharge", cat: "B" },
+            { id: "DT-02", name: "Residence and Scope of Total Income", cat: "B" },
+            { id: "DT-03", name: "Incomes Exempt from Tax (Sec 10 / 10AA)", cat: "B" },
+            { id: "DT-04", name: "Profits & Gains of Business or Profession (PGBP)", cat: "A" },
+            { id: "DT-05", name: "Capital Gains (including Slump Sale, Share Buybacks)", cat: "A" },
+            { id: "DT-06", name: "Income from Other Sources & Clubbing of Income", cat: "C" },
+            { id: "DT-07", name: "Set-off, Carry Forward and Deductions (Ch VI-A)", cat: "B" },
+            { id: "DT-08", name: "Assessment of Various Entities (Companies, MAT/AMT)", cat: "A" },
+            { id: "DT-09", name: "Assessment of Trusts, Charitable Inst. & Political Parties", cat: "A" },
+            { id: "DT-10", name: "Assessment of Firms, LLPs, AOPs & BOIs", cat: "B" },
+            { id: "DT-11", name: "Tax Planning, Tax Avoidance & Tax Evasion", cat: "C" },
+            { id: "DT-12", name: "TDS / TCS Provisions & Recovery of Tax", cat: "A" },
+            { id: "DT-13", name: "Income Tax Authorities & Assessment Procedure", cat: "B" },
+            { id: "DT-14", name: "Appeals, Revisions & Dispute Resolution (DRS)", cat: "B" },
+            { id: "DT-15", name: "Penalties, Offences & Prosecution", cat: "C" },
+            { id: "DT-16", name: "Transfer Pricing (Sec 92 to 92F)", cat: "A" },
+            { id: "DT-17", name: "Non-Resident Taxation & Double Tax Relief (DTAA)", cat: "A" },
+            { id: "DT-18", name: "Equalisation Levy & Black Money Act", cat: "B" },
+            { id: "DT-19", name: "Overview of Model Tax Conventions & BEPS", cat: "C" }
+        ],
+        IDT: [
+            { id: "IDT-01", name: "GST in India: An Introduction", cat: "C" },
+            { id: "IDT-02", name: "Supply under GST", cat: "B" },
+            { id: "IDT-03", name: "Charge of GST & Reverse Charge Mechanism (RCM)", cat: "A" },
+            { id: "IDT-04", name: "Place of Supply (Highly Critical)", cat: "A" },
+            { id: "IDT-05", name: "Exemptions from GST", cat: "B" },
+            { id: "IDT-06", name: "Time and Value of Supply", cat: "A" },
+            { id: "IDT-07", name: "Input Tax Credit (ITC) & Job Work", cat: "A" },
+            { id: "IDT-08", name: "Registration under GST", cat: "B" },
+            { id: "IDT-09", name: "Tax Invoice, Credit & Debit Notes, Accounts & Records", cat: "C" },
+            { id: "IDT-10", name: "E-Way Bill & Payment of Tax", cat: "B" },
+            { id: "IDT-11", name: "Returns and Accounts under GST", cat: "C" },
+            { id: "IDT-12", name: "Refunds under GST (Highly Formula-Driven)", cat: "A" },
+            { id: "IDT-13", name: "Assessment and Audit", cat: "C" },
+            { id: "IDT-14", name: "Inspection, Search, Seizure and Arrest", cat: "B" },
+            { id: "IDT-15", name: "Demands and Recovery", cat: "B" },
+            { id: "IDT-16", name: "Liability to Pay in Certain Cases", cat: "C" },
+            { id: "IDT-17", name: "Offences and Penalties, Appeals & Revisions", cat: "B" },
+            { id: "IDT-18", name: "Customs: Introduction, Types of Duties", cat: "B" },
+            { id: "IDT-19", name: "Customs: Valuation Rules (Import & Export)", cat: "A" },
+            { id: "IDT-20", name: "Customs: Import/Export Procedures & Warehousing", cat: "B" },
+            { id: "IDT-21", name: "Customs: Duty Drawback & Baggage Rules", cat: "B" },
+            { id: "IDT-22", name: "Foreign Trade Policy (FTP)", cat: "C" }
+        ],
+        IBS: [
+            { id: "IBS-01", name: "ICAI Case Study 1 - Integrated Assessment", cat: "A" },
+            { id: "IBS-02", name: "ICAI Case Study 2 - Integrated Assessment", cat: "A" },
+            { id: "IBS-03", name: "ICAI Case Study 3 - Integrated Assessment", cat: "A" },
+            { id: "IBS-04", name: "ICAI Case Study 4 - Integrated Assessment", cat: "A" },
+            { id: "IBS-05", name: "ICAI Case Study 5 - Integrated Assessment", cat: "A" },
+            { id: "IBS-06", name: "ICAI Case Study 6 - Integrated Assessment", cat: "A" },
+            { id: "IBS-07", name: "ICAI Case Study 7 - Integrated Assessment", cat: "A" },
+            { id: "IBS-08", name: "ICAI Case Study 8 - Integrated Assessment", cat: "A" },
+            { id: "IBS-09", name: "ICAI Case Study 9 - Integrated Assessment", cat: "A" },
+            { id: "IBS-10", name: "ICAI Case Study 10 - Integrated Assessment", cat: "A" }
+        ]
+    };
+
+    // Micro Study Planner Blocks configuration data for dynamic schedule rendering
+    const plannerSchedules = {
+        1: [
+            { block: "Block A", dates: "August 1 – August 15", items: [
+                { id: "sch-1-1", title: "Study Slow-Ramp up Period", task: "Log 4-5 hours daily. Complete DT-01, DT-02, and IDT-01, IDT-02." },
+                { id: "sch-1-2", title: "Target Exemption focus points", task: "Study DT-03 (Exempt incomes) & IDT-03 (Charge/RCM)." },
+                { id: "sch-1-3", title: "Comprehensive PGBP Study", task: "Dedicate 5 complete days for DT-04 (PGBP) sums." },
+                { id: "sch-1-4", title: "Place of Supply focus", task: "Complete IDT-04 and DT-05 (Capital Gains)." }
+            ]},
+            { block: "Block B", dates: "August 16 – August 31", items: [
+                { id: "sch-1-5", title: "Increase Pace (6-7 hours)", task: "Revise DT-06 (Other Sources) & IDT-06 (Value/Time of Supply)." },
+                { id: "sch-1-6", title: "Assessment of Entities (MAT/AMT)", task: "Focus on corporate assessment DT-08 & solve 8 large practical sums." },
+                { id: "sch-1-7", title: "GST Input Tax Credit", task: "Complete IDT-07 (ITC blocked items)." },
+                { id: "sch-1-8", title: "TDS / TCS provisions", task: "Master DT-12 (TDS rules) & create rates summary sheet." }
+            ]},
+            { block: "Block C", dates: "September 1 – September 15", items: [
+                { id: "sch-1-9", title: "High Pacing Run (7-8 hours)", task: "Solve DT-10 (Firms/AOPs) & IDT-12 (GST Refunds formulae)." },
+                { id: "sch-1-10", title: "Assessment Procedures & Disputes", task: "Complete DT-13 & DT-14 (Appeals/Assessment details)." },
+                { id: "sch-1-11", title: "Transfer Pricing & DTAA", task: "Complete international taxation DT-16 & DT-17." },
+                { id: "sch-1-12", title: "Customs Valuation", task: "Complete IDT-18, IDT-19, and IDT-20 (Customs valuation guidelines)." }
+            ]}
+        ],
+        2: [
+            { block: "Block A - DT Rush", dates: "September 16 – September 25", items: [
+                { id: "sch-2-1", title: "Direct Tax Rapid Recall", task: "Revise summary notes of DT-01 to DT-19. Focus strictly on Category A items." },
+                { id: "sch-2-2", title: "Re-solve Marked Sums", task: "Open tracker and complete all marked (Cross/Star) sums for DT on paper." }
+            ]},
+            { block: "Block B - IDT Rush", dates: "September 26 – October 5", items: [
+                { id: "sch-2-3", title: "Indirect Tax Rapid Recall", task: "Re-solve complex ITC pathways, refund formulations, and place of supply conditions." },
+                { id: "sch-2-4", title: "Customs Special Practice", task: "Revise customs valuation rules and baggage allowance categories." }
+            ]}
+        ],
+        3: [
+            { block: "Block A - IBS Integration", dates: "October 6 – October 7", items: [
+                { id: "sch-3-1", title: "IBS Integration Kickoff", task: "Solve case study digest cases 1 to 5. Cross-reference provisions in DT/IDT index." }
+            ]},
+            { block: "Block B - DT Sprint & Mock", dates: "October 8 – October 13", items: [
+                { id: "sch-3-2", title: "DT 6-Day Fast revision", task: "Conduct a fast flip of all chapters to load in direct memory." },
+                { id: "sch-3-3", title: "DT Exam Simulation", task: "October 13: Under mock conditions, take a 100-mark paper from 2:00 PM - 5:00 PM." }
+            ]},
+            { block: "Block C - IDT Sprint & Mock", dates: "October 14 – October 19", items: [
+                { id: "sch-3-4", title: "IDT 6-Day Fast revision", task: "Review invoice requirements, E-way bill rules, and FTP chapters." },
+                { id: "sch-3-5", title: "IDT Exam Simulation", task: "October 19: Lock room and take a complete 3-hour past paper or MTP." }
+            ]},
+            { block: "Block D - IBS & Fine Tuning", dates: "October 20 – October 24", items: [
+                { id: "sch-3-6", title: "IBS Digest Completion", task: "Solve remaining case studies 6 to 10." },
+                { id: "sch-3-7", title: "Buffer Review Days", task: "Analyze mistakes from mock tests. Finalize open-book index sheets." }
+            ]}
+        ],
+        4: [
+            { block: "Block A - DT LDR Run", dates: "October 25 – October 27", items: [
+                { id: "sch-4-1", title: "DT Ultra Fast Recall", task: "Rapid review of statutory tax rates, exemptions limits, and TP methods." }
+            ]},
+            { block: "Block B - IDT LDR Run", dates: "October 28 – October 30", items: [
+                { id: "sch-4-2", title: "IDT Ultra Fast Recall", task: "Rapid review of ITC rules, RCM tables, Place of supply matrices." }
+            ]},
+            { block: "Block C - Final Mindset", dates: "October 31", items: [
+                { id: "sch-4-3", title: "Exam Prep Finalization", task: "Organize books, pens, permit tickets, and open-book indices. Sleep 8 full hours." }
+            ]}
+        ]
+    };
+
+    // Toast alerts helper
+    function showToast(message, type = "success") {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `flex items-center space-x-2 px-4 py-3 rounded-lg text-xs font-semibold text-white shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 border`;
+        
+        if (type === 'success') {
+            toast.className += ' bg-emerald-950 border-emerald-800 text-emerald-300';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${message}</span>`;
+        } else if (type === 'info') {
+            toast.className += ' bg-indigo-950 border-indigo-800 text-indigo-300';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${message}</span>`;
+        } else {
+            toast.className += ' bg-rose-950 border-rose-800 text-rose-300';
+            toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>${message}</span>`;
+        }
+
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('translate-y-2', 'opacity-0');
+        }, 10);
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => { toast.remove(); }, 300);
+        }, 3000);
+    }
+
+    // Tab Switching Router
+    function switchTab(tabId) {
+        const tabs = ['dashboard', 'tracker', 'planner', 'ledger', 'settings'];
+        tabs.forEach(t => {
+            const block = document.getElementById(`tab-${t}`);
+            if (block) block.classList.add('hidden');
+            const navBtn = document.getElementById(`nav-${t}`);
+            if (navBtn) {
+                navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-400 hover:bg-slate-850 hover:text-white";
+            }
+        });
+
+        const activeBlock = document.getElementById(`tab-${tabId}`);
+        if (activeBlock) activeBlock.classList.remove('hidden');
+        
+        const activeNavBtn = document.getElementById(`nav-${tabId}`);
+        if (activeNavBtn) {
+            activeNavBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 text-white bg-indigo-600/90 shadow-md shadow-indigo-900/20";
+        }
+        
+        activeTab = tabId;
+
+        const headerTitle = document.getElementById('current-tab-title');
+        const headerDesc = document.getElementById('current-tab-desc');
+
+        if (tabId === 'dashboard') {
+            if (headerTitle) headerTitle.textContent = "Study Dashboard";
+            if (headerDesc) headerDesc.textContent = "Comprehensive status review and planning dashboard.";
+            updateDashboardMetrics();
+        } else if (tabId === 'tracker') {
+            if (headerTitle) headerTitle.textContent = "Chapter-Wise Tracker";
+            if (headerDesc) headerDesc.textContent = "Interactive revision checklists, sum counts, and tricky adjustment tracker.";
+            renderTrackerTable();
+        } else if (tabId === 'planner') {
+            if (headerTitle) headerTitle.textContent = "3-Month Study Planner";
+            if (headerDesc) headerDesc.textContent = "August to October micro-level schedule & daily pacing guidelines.";
+            renderPlannerSchedule();
+        } else if (tabId === 'ledger') {
+            if (headerTitle) headerTitle.textContent = "Tricky Adjustments Ledger";
+            if (headerDesc) headerDesc.textContent = "Digital LDR notebook. Jot down specific provisions and unique adjustment methods.";
+            renderLedgerCards();
+        } else if (tabId === 'settings') {
+            if (headerTitle) headerTitle.textContent = "System Backups & Settings";
+            if (headerDesc) headerDesc.textContent = "Import or export custom data structures and local tracking configurations.";
+        }
+    }
+
+    // Dynamic Database Seed System
+    function initializeDatabase() {
+        const localTracker = safeGetItem('CA_G2_Tracker_Data');
+        const localPlanner = safeGetItem('CA_G2_Planner_Data');
+        const localLedger = safeGetItem('CA_G2_Ledger_Data');
+        const localSimDate = safeGetItem('CA_G2_Sim_Date');
+
+        // Initial setup for default Tracker entries if not existing
+        if (localTracker) {
+            try {
+                trackerDatabase = JSON.parse(localTracker);
+            } catch (e) {
+                trackerDatabase = {};
+            }
+        }
+        
+        if (Object.keys(trackerDatabase).length === 0) {
+            Object.keys(syllabusData).forEach(subj => {
+                syllabusData[subj].forEach(chap => {
+                    trackerDatabase[chap.id] = {
+                        rev1: false,
+                        sums: "0/0",
+                        rev2: false,
+                        score: "",
+                        rev3: false,
+                        notes: ""
+                    };
+                });
+            });
+            saveTrackerToLocalStorage();
+        }
+
+        // Initial setup for Planner schedule checkboxes
+        if (localPlanner) {
+            try {
+                studyPlannerProgress = JSON.parse(localPlanner);
+            } catch (e) {
+                studyPlannerProgress = {};
+            }
+        }
+        
+        if (Object.keys(studyPlannerProgress).length === 0) {
+            Object.keys(plannerSchedules).forEach(phase => {
+                plannerSchedules[phase].forEach(blk => {
+                    blk.items.forEach(item => {
+                        studyPlannerProgress[item.id] = false;
+                    });
+                });
+            });
+            savePlannerToLocalStorage();
+        }
+
+        // Initial setup for Ledgers
+        if (localLedger) {
+            try {
+                trickyAdjustmentsLedger = JSON.parse(localLedger);
+            } catch (e) {
+                trickyAdjustmentsLedger = [];
+            }
+        }
+        
+        if (trickyAdjustmentsLedger.length === 0) {
+            trickyAdjustmentsLedger = [
+                { id: "adj-sample-1", subject: "DT", chapterId: "DT-04", summary: "Sec 43B(h) MSME payments", details: "Deduction for payment to micro or small enterprises allowed ONLY if paid within 15 days (or max 45 days if written agreement exists). Else disallows in current year and allows in year of actual payment." },
+                { id: "adj-sample-2", subject: "IDT", chapterId: "IDT-07", summary: "Blocked Credit on Motor Vehicles Sec 17(5)", details: "No ITC allowed on motor vehicles for transportation of persons having approved seating capacity of <= 13 persons, EXCEPT when used for further supply of vehicles, transportation of passengers, or imparting training." }
+            ];
+            saveLedgerToLocalStorage();
+        }
+
+        // Simulate initial system date
+        if (localSimDate) {
+            simulatedSystemDate = new Date(localSimDate);
+            const simInput = document.getElementById('simulated-date');
+            if (simInput) simInput.value = localSimDate;
+        } else {
+            const simInput = document.getElementById('simulated-date');
+            if (simInput) simInput.value = "2026-08-01";
+        }
+
+        calculateCountdown();
+        updateDashboardMetrics();
+    }
+
+    // Save helpers
+    function saveTrackerToLocalStorage() {
+        saveTrackerToLocalStorageEx();
+    }
+    function saveTrackerToLocalStorageEx() {
+        safeSetItem('CA_G2_Tracker_Data', JSON.stringify(trackerDatabase));
+    }
+    function savePlannerToLocalStorage() {
+        safeSetItem('CA_G2_Planner_Data', JSON.stringify(studyPlannerProgress));
+    }
+    function saveLedgerToLocalStorage() {
+        safeSetItem('CA_G2_Ledger_Data', JSON.stringify(trickyAdjustmentsLedger));
+    }
+
+    // Dynamic Live Countdown Engine
+    function calculateCountdown() {
+        const examDate = new Date("2026-11-01T09:00:00");
+        const diff = examDate - simulatedSystemDate;
+
+        const dEl = document.getElementById('countdown-days');
+        const hEl = document.getElementById('countdown-hours');
+        const mEl = document.getElementById('countdown-mins');
+
+        if (diff <= 0) {
+            if (dEl) dEl.textContent = "0";
+            if (hEl) hEl.textContent = "0";
+            if (mEl) mEl.textContent = "0";
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        if (dEl) dEl.textContent = days;
+        if (hEl) hEl.textContent = hours;
+        if (mEl) mEl.textContent = mins;
+    }
+
+    // Date Simulation Controller
+    function updateSimulatedDate() {
+        const val = document.getElementById('simulated-date').value;
+        if (!val) return;
+        simulatedSystemDate = new Date(val);
+        safeSetItem('CA_G2_Sim_Date', val);
+        calculateCountdown();
+        updateDashboardMetrics();
+        showToast(`Date simulated to ${val}. Study targets updated.`, "info");
+    }
+
+    // Real-Time Progress Metrics Engine
+    function updateDashboardMetrics() {
+        let totalItems = 51; // DT(19) + IDT(22) + IBS(10)
+        let totalWeight = totalItems * 3; // 3 Revision Tracks
+
+        let rev1Checked = 0;
+        let rev2Checked = 0;
+        let rev3Checked = 0;
+
+        let totalSumsSolved = 0;
+        let totalSumsCount = 0;
+
+        let totalScoreSum = 0;
+        let mockCount = 0;
+
+        let trickyNotesCount = 0;
+
+        // Calculate direct paper statistics
+        let papersCount = {
+            DT: { r1: 0, r2: 0, r3: 0, total: 19 },
+            IDT: { r1: 0, r2: 0, r3: 0, total: 22 },
+            IBS: { r1: 0, r2: 0, r3: 0, total: 10 }
+        };
+
+        Object.keys(trackerDatabase).forEach(chapId => {
+            const chap = trackerDatabase[chapId];
+            const subj = chapId.split('-')[0];
+
+            if (chap.rev1) {
+                rev1Checked++;
+                if (papersCount[subj]) papersCount[subj].r1++;
+            }
+            if (chap.rev2) {
+                rev2Checked++;
+                if (papersCount[subj]) papersCount[subj].r2++;
+            }
+            if (chap.rev3) {
+                rev3Checked++;
+                if (papersCount[subj]) papersCount[subj].r3++;
+            }
+
+            // Sums Parsing ("15/20")
+            if (chap.sums && chap.sums.includes('/')) {
+                const parts = chap.sums.split('/');
+                const solved = parseInt(parts[0]) || 0;
+                const total = parseInt(parts[1]) || 0;
+                totalSumsSolved += solved;
+                totalSumsCount += total;
+            }
+
+            // Mock score parsing
+            if (chap.score && !isNaN(chap.score) && chap.score !== "") {
+                totalScoreSum += parseFloat(chap.score);
+                mockCount++;
+            }
+
+            // Adjustment notes parsing
+            if (chap.notes && chap.notes.trim() !== '') {
+                trickyNotesCount++;
+            }
+        });
+
+        // Combined Overall Progress percentage
+        let checkedElements = rev1Checked + rev2Checked + rev3Checked;
+        let overallPct = totalWeight > 0 ? Math.round((checkedElements / totalWeight) * 100) : 0;
+
+        const sidebarOverallPct = document.getElementById('sidebar-overall-pct');
+        const sidebarOverallRatio = document.getElementById('sidebar-overall-ratio');
+        const sidebarProgressBar = document.getElementById('sidebar-progress-bar');
+
+        if (sidebarOverallPct) sidebarOverallPct.textContent = `${overallPct}%`;
+        if (sidebarOverallRatio) sidebarOverallRatio.textContent = `${checkedElements}/${totalWeight} checklist items`;
+        if (sidebarProgressBar) sidebarProgressBar.style.width = `${overallPct}%`;
+
+        // Setting Dashboard Revision Card values
+        const r1Count = document.getElementById('rev1-count');
+        const r1Fraction = document.getElementById('rev1-fraction');
+        const r1SumsPercentage = document.getElementById('rev1-sums-percentage');
+        const r1SumsBar = document.getElementById('rev1-sums-bar');
+
+        if (r1Count) r1Count.textContent = `${Math.round((rev1Checked / totalItems) * 100)}%`;
+        if (r1Fraction) r1Fraction.textContent = `${rev1Checked} of ${totalItems} chapters completed`;
+
+        let sumsPct = totalSumsCount > 0 ? Math.round((totalSumsSolved / totalSumsCount) * 100) : 0;
+        if (r1SumsPercentage) r1SumsPercentage.textContent = `${sumsPct}% Sums Solved (${totalSumsSolved}/${totalSumsCount})`;
+        if (r1SumsBar) r1SumsBar.style.width = `${sumsPct}%`;
+
+        const r2Count = document.getElementById('rev2-count');
+        const r2Fraction = document.getElementById('rev2-fraction');
+        const r2ScoreAvg = document.getElementById('rev2-score-avg');
+        const r2ScoreBar = document.getElementById('rev2-score-bar');
+
+        if (r2Count) r2Count.textContent = `${Math.round((rev2Checked / totalItems) * 100)}%`;
+        if (r2Fraction) r2Fraction.textContent = `${rev2Checked} of ${totalItems} chapters completed`;
+
+        let avgMock = mockCount > 0 ? Math.round(totalScoreSum / mockCount) : 0;
+        if (r2ScoreAvg) r2ScoreAvg.textContent = `${avgMock}/100 Avg Mock Score (${mockCount} taken)`;
+        if (r2ScoreBar) r2ScoreBar.style.width = `${avgMock}%`;
+
+        const r3Count = document.getElementById('rev3-count');
+        const r3Fraction = document.getElementById('rev3-fraction');
+        const r3TrickyRatio = document.getElementById('rev3-tricky-ratio');
+        const r3TrickyBar = document.getElementById('rev3-tricky-bar');
+
+        if (r3Count) r3Count.textContent = `${Math.round((rev3Checked / totalItems) * 100)}%`;
+        if (r3Fraction) r3Fraction.textContent = `${rev3Checked} of ${totalItems} chapters completed`;
+        
+        let localNotesAdded = trickyAdjustmentsLedger.length;
+        if (r3TrickyRatio) r3TrickyRatio.textContent = `${localNotesAdded} ledger notes registered`;
+        let ledgerTargetBar = Math.min((localNotesAdded / 25) * 100, 100);
+        if (r3TrickyBar) r3TrickyBar.style.width = `${ledgerTargetBar}%`;
+
+        // Direct Tax Breakdown progress
+        let dtTotalTracks = papersCount.DT.total * 3;
+        let dtChecked = papersCount.DT.r1 + papersCount.DT.r2 + papersCount.DT.r3;
+        let dtPct = Math.round((dtChecked / dtTotalTracks) * 100);
+        
+        const dtCompletedPct = document.getElementById('dt-completed-pct');
+        const dtRev1Fraction = document.getElementById('dt-rev1-fraction');
+        const dtRev1Progress = document.getElementById('dt-rev1-progress');
+        const dtRev2Fraction = document.getElementById('dt-rev2-fraction');
+        const dtRev2Progress = document.getElementById('dt-rev2-progress');
+        const dtRev3Fraction = document.getElementById('dt-rev3-fraction');
+        const dtRev3Progress = document.getElementById('dt-rev3-progress');
+
+        if (dtCompletedPct) dtCompletedPct.textContent = `${dtPct}% Done`;
+        if (dtRev1Fraction) dtRev1Fraction.textContent = `${papersCount.DT.r1}/${papersCount.DT.total}`;
+        if (dtRev1Progress) dtRev1Progress.style.width = `${Math.round((papersCount.DT.r1/papersCount.DT.total)*100)}%`;
+        if (dtRev2Fraction) dtRev2Fraction.textContent = `${papersCount.DT.r2}/${papersCount.DT.total}`;
+        if (dtRev2Progress) dtRev2Progress.style.width = `${Math.round((papersCount.DT.r2/papersCount.DT.total)*100)}%`;
+        if (dtRev3Fraction) dtRev3Fraction.textContent = `${papersCount.DT.r3}/${papersCount.DT.total}`;
+        if (dtRev3Progress) dtRev3Progress.style.width = `${Math.round((papersCount.DT.r3/papersCount.DT.total)*100)}%`;
+
+        // Indirect Tax Breakdown progress
+        let idtTotalTracks = papersCount.IDT.total * 3;
+        let idtChecked = papersCount.IDT.r1 + papersCount.IDT.r2 + papersCount.IDT.r3;
+        let idtPct = Math.round((idtChecked / idtTotalTracks) * 100);
+        
+        const idtCompletedPct = document.getElementById('idt-completed-pct');
+        const idtRev1Fraction = document.getElementById('idt-rev1-fraction');
+        const idtRev1Progress = document.getElementById('idt-rev1-progress');
+        const idtRev2Fraction = document.getElementById('idt-rev2-fraction');
+        const idtRev2Progress = document.getElementById('idt-rev2-progress');
+        const idtRev3Fraction = document.getElementById('idt-rev3-fraction');
+        const idtRev3Progress = document.getElementById('idt-rev3-progress');
+
+        if (idtCompletedPct) idtCompletedPct.textContent = `${idtPct}% Done`;
+        if (idtRev1Fraction) idtRev1Fraction.textContent = `${papersCount.IDT.r1}/${papersCount.IDT.total}`;
+        if (idtRev1Progress) idtRev1Progress.style.width = `${Math.round((papersCount.IDT.r1/papersCount.IDT.total)*100)}%`;
+        if (idtRev2Fraction) idtRev2Fraction.textContent = `${papersCount.IDT.r2}/${papersCount.IDT.total}`;
+        if (idtRev2Progress) idtRev2Progress.style.width = `${Math.round((papersCount.IDT.r2/papersCount.IDT.total)*100)}%`;
+        if (idtRev3Fraction) idtRev3Fraction.textContent = `${papersCount.IDT.r3}/${papersCount.IDT.total}`;
+        if (idtRev3Progress) idtRev3Progress.style.width = `${Math.round((papersCount.IDT.r3/papersCount.IDT.total)*100)}%`;
+
+        // Integrated Business Solutions progress
+        let ibsTotalTracks = papersCount.IBS.total * 3;
+        let ibsChecked = papersCount.IBS.r1 + papersCount.IBS.r2 + papersCount.IBS.r3;
+        let ibsPct = Math.round((ibsChecked / ibsTotalTracks) * 100);
+        
+        const ibsCompletedPct = document.getElementById('ibs-completed-pct');
+        const ibsRev1Fraction = document.getElementById('ibs-rev1-fraction');
+        const ibsRev1Progress = document.getElementById('ibs-rev1-progress');
+        const ibsRev2Fraction = document.getElementById('ibs-rev2-fraction');
+        const ibsRev2Progress = document.getElementById('ibs-rev2-progress');
+        const ibsIndexFraction = document.getElementById('ibs-index-fraction');
+        const ibsIndexProgress = document.getElementById('ibs-index-progress');
+
+        if (ibsCompletedPct) ibsCompletedPct.textContent = `${ibsPct}% Done`;
+        if (ibsRev1Fraction) ibsRev1Fraction.textContent = `${papersCount.IBS.r1}/${papersCount.IBS.total}`;
+        if (ibsRev1Progress) ibsRev1Progress.style.width = `${Math.round((papersCount.IBS.r1/papersCount.IBS.total)*100)}%`;
+        if (ibsRev2Fraction) ibsRev2Fraction.textContent = `${papersCount.IBS.r2}/${papersCount.IBS.total}`;
+        if (ibsRev2Progress) ibsRev2Progress.style.width = `${Math.round((papersCount.IBS.r2/papersCount.IBS.total)*100)}%`;
+        if (ibsIndexFraction) ibsIndexFraction.textContent = `${papersCount.IBS.r3}/${papersCount.IBS.total}`;
+        if (ibsIndexProgress) ibsIndexProgress.style.width = `${Math.round((papersCount.IBS.r3/papersCount.IBS.total)*100)}%`;
+
+        updateDynamicPacingBanner();
+    }
+
+    // Dynamic banner selector according to time scheduling blocks
+    function updateDynamicPacingBanner() {
+        const bannerTitle = document.getElementById('banner-pacing-title');
+        const bannerDesc = document.getElementById('banner-pacing-desc');
+        if (!bannerTitle || !bannerDesc) return;
+
+        const dateAug1 = new Date("2026-08-01");
+        const dateAug16 = new Date("2026-08-16");
+        const dateSep1 = new Date("2026-09-01");
+        const dateSep16 = new Date("2026-09-16");
+        const dateOct6 = new Date("2026-10-06");
+        const dateOct25 = new Date("2026-10-25");
+
+        if (simulatedSystemDate < dateAug1) {
+            bannerTitle.textContent = "Pre-Revision Phase: Pre-August Calm";
+            bannerDesc.textContent = "Rest up, arrange revision books and study modules. Revisions commence on August 1st!";
+        } else if (simulatedSystemDate >= dateAug1 && simulatedSystemDate < dateAug16) {
+            bannerTitle.textContent = "Current Phase: Block A (August 1 - 15)";
+            bannerDesc.textContent = "Keep things slow and steady. Aim for 4-5 daily hours on DT Basics & GST Supplies.";
+        } else if (simulatedSystemDate >= dateAug16 && simulatedSystemDate < dateSep1) {
+            bannerTitle.textContent = "Current Phase: Block B (August 16 - 31)";
+            bannerDesc.textContent = "Stepping up the pacing. Scale to 6-8 daily hours. Solve complex Corporate tax & GST ITC sums.";
+        } else if (simulatedSystemDate >= dateSep1 && simulatedSystemDate < dateSep16) {
+            bannerTitle.textContent = "Current Phase: Block C (September 1 - 15)";
+            bannerDesc.textContent = "Comprehensive revision wrap. Push for 7-8 hours. Complete Refunds, international tax, and Customs.";
+        } else if (simulatedSystemDate >= dateSep16 && simulatedSystemDate < dateOct6) {
+            bannerTitle.textContent = "Current Phase: Phase 2 Fast Run (September 16 - October 5)";
+            bannerDesc.textContent = "Do not re-read chapters page-by-page. Solve all marked (Cross/Star) sums on paper. Keep notes ready.";
+        } else if (simulatedSystemDate >= dateOct6 && simulatedSystemDate < dateOct25) {
+            bannerTitle.textContent = "Current Phase: Phase 3 Mock Exams (October 6 - 24)";
+            bannerDesc.textContent = "Full-length mock simulation running now. Set timer for 2-5 PM. Finish IBS case digest sheets.";
+        } else {
+            bannerTitle.textContent = "Current Phase: Last Day Revision Run (October 25 - 31)";
+            bannerDesc.textContent = "Time-pacing is critical. Rapidly recall provisions, section tables, and exemptions limits.";
+        }
+    }
+
+    // Direct Subject filtering on Tracker Tab
+    function openTrackerAndFilter(subjCode) {
+        switchTab('tracker');
+        setTrackerSubject(subjCode);
+    }
+
+    function setTrackerSubject(subj) {
+        activeTrackerSubject = subj;
+        const subjects = ['ALL', 'DT', 'IDT', 'IBS'];
+        subjects.forEach(s => {
+            const btn = document.getElementById(`btn-subject-${s.toLowerCase()}`);
+            if (btn) {
+                if (s === subj) {
+                    btn.className = "px-4 py-2 text-xs font-bold rounded-lg border border-indigo-500/25 bg-indigo-500/10 text-white transition";
+                } else {
+                    btn.className = "px-4 py-2 text-xs font-bold rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition";
+                }
+            }
+        });
+        renderTrackerTable();
+    }
+
+    function applyTrackerFilters() {
+        renderTrackerTable();
+    }
+
+    // Main Interactive Table Renderer
+    function renderTrackerTable() {
+        const tbody = document.getElementById('tracker-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const searchQuery = document.getElementById('chapter-search').value.toLowerCase();
+        const categoryFilter = document.getElementById('category-filter').value;
+
+        let renderList = [];
+        if (activeTrackerSubject === 'ALL') {
+            renderList = [...syllabusData.DT, ...syllabusData.IDT, ...syllabusData.IBS];
+        } else {
+            renderList = [...syllabusData[activeTrackerSubject]];
+        }
+
+        renderList.forEach(item => {
+            // Apply filtering conditions
+            const matchesSearch = item.name.toLowerCase().includes(searchQuery) || item.id.toLowerCase().includes(searchQuery);
+            const matchesCategory = categoryFilter === 'ALL' || item.cat === categoryFilter;
+
+            if (matchesSearch && matchesCategory) {
+                const state = trackerDatabase[item.id] || { rev1: false, sums: "", rev2: false, score: "", rev3: false, notes: "" };
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/40 transition duration-150 text-slate-300";
+                
+                // Color schemes based on Paper subject
+                let subjColor = "text-indigo-400 bg-indigo-950 border-indigo-900/30";
+                if (item.id.startsWith('IDT')) subjColor = "text-emerald-400 bg-emerald-950 border-emerald-900/30";
+                if (item.id.startsWith('IBS')) subjColor = "text-amber-400 bg-amber-950 border-amber-900/30";
+
+                // ABC Category Badge style
+                let catBadge = "bg-rose-950 border-rose-900 text-rose-400"; // Default Category A
+                if (item.cat === 'B') catBadge = "bg-amber-950 border-amber-900 text-amber-400";
+                if (item.cat === 'C') catBadge = "bg-slate-900 border-slate-850 text-slate-400";
+
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold"><span class="px-2.5 py-1 rounded text-[10px] border ${subjColor}">${item.id}</span></td>
+                    <td class="p-4 font-semibold text-slate-200 text-xs">${item.name}</td>
+                    <td class="p-4 text-center">
+                        <span class="px-2.5 py-1 text-[10px] rounded-full border font-extrabold tracking-wider uppercase ${catBadge}">${item.cat}</span>
+                    </td>
+                    <td class="p-4 text-center bg-indigo-950/5 border-r border-slate-850">
+                        <input type="checkbox" onchange="toggleTrackCheck('${item.id}', 'rev1')" ${state.rev1 ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 bg-slate-950 border-slate-800 focus:ring-indigo-500 focus:ring-offset-slate-900">
+                    </td>
+                    <td class="p-4 text-center bg-indigo-950/5 border-r border-slate-850">
+                        <input type="text" value="${state.sums || '0/0'}" onblur="updateTrackerSums('${item.id}', this.value)" class="w-16 bg-slate-950 text-center font-mono text-[11px] border border-slate-800 rounded px-1.5 py-1 focus:outline-none focus:border-indigo-500">
+                    </td>
+                    <td class="p-4 text-center bg-emerald-950/5 border-r border-slate-850">
+                        <input type="checkbox" onchange="toggleTrackCheck('${item.id}', 'rev2')" ${state.rev2 ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 bg-slate-950 border-slate-800 focus:ring-emerald-500 focus:ring-offset-slate-900">
+                    </td>
+                    <td class="p-4 text-center bg-emerald-950/5 border-r border-slate-850">
+                        <input type="number" placeholder="Mock" value="${state.score || ''}" onblur="updateTrackerScore('${item.id}', this.value)" min="0" max="100" class="w-14 bg-slate-950 text-center font-mono text-[11px] border border-slate-800 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500">
+                    </td>
+                    <td class="p-4 text-center bg-pink-950/5 border-r border-slate-850">
+                        <input type="checkbox" onchange="toggleTrackCheck('${item.id}', 'rev3')" ${state.rev3 ? 'checked' : ''} class="w-4 h-4 rounded text-pink-600 bg-slate-950 border-slate-800 focus:ring-pink-500 focus:ring-offset-slate-900">
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" placeholder="Add specific tricky clause notes..." value="${state.notes || ''}" onblur="updateTrackerNotes('${item.id}', this.value)" class="w-full bg-slate-950 text-xs border border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-indigo-500">
+                            ${state.notes ? `<button onclick="quickPushLedger('${item.id}')" title="Send to Ledger Notebook" class="text-indigo-400 hover:text-indigo-300 p-1"><i class="fa-solid fa-cloud-arrow-up"></i></button>` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
+    }
+
+    // Real-time track cell togglers
+    function toggleTrackCheck(chapId, trackKey) {
+        if (!trackerDatabase[chapId]) {
+            trackerDatabase[chapId] = { rev1: false, sums: "0/0", rev2: false, score: "", rev3: false, notes: "" };
+        }
+        trackerDatabase[chapId][trackKey] = !trackerDatabase[chapId][trackKey];
+        saveTrackerToLocalStorage();
+        updateDashboardMetrics();
+        showToast(`${chapId} updated in tracker.`, "success");
+    }
+
+    function updateTrackerSums(chapId, val) {
+        if (!trackerDatabase[chapId]) return;
+        trackerDatabase[chapId].sums = val;
+        saveTrackerToLocalStorage();
+        updateDashboardMetrics();
+    }
+
+    function updateTrackerScore(chapId, val) {
+        if (!trackerDatabase[chapId]) return;
+        trackerDatabase[chapId].score = val;
+        saveTrackerToLocalStorage();
+        updateDashboardMetrics();
+    }
+
+    function updateTrackerNotes(chapId, val) {
+        if (!trackerDatabase[chapId]) return;
+        trackerDatabase[chapId].notes = val;
+        saveTrackerToLocalStorage();
+        updateDashboardMetrics();
+        renderTrackerTable();
+    }
+
+    // Instant send to Tricky Adjustments ledger
+    function quickPushLedger(chapId) {
+        const item = trackerDatabase[chapId];
+        if (!item) return;
+        const subject = chapId.split('-')[0];
+        
+        const chapMeta = [...syllabusData.DT, ...syllabusData.IDT, ...syllabusData.IBS].find(x => x.id === chapId);
+        const name = chapMeta ? chapMeta.name : "";
+
+        const newEntry = {
+            id: `adj-${Date.now()}`,
+            subject: subject,
+            chapterId: chapId,
+            summary: `Notes on ${name}`,
+            details: item.notes
+        };
+
+        trickyAdjustmentsLedger.unshift(newEntry);
+        saveLedgerToLocalStorage();
+        updateDashboardMetrics();
+        showToast(`Notes successfully pushed to Tricky Ledger database!`, "success");
+    }
+
+    // Copy Current Table to Spreadsheet (Clipboard conversion)
+    function exportCurrentTable() {
+        let headers = ["Chapter ID", "Topic / Chapter Name", "ABC Category", "Revision 1 Completed", "Sums Solved", "Revision 2 Completed", "Mock Score (100)", "Revision 3 Completed", "Tricky Notes/Adjustments"];
+        let rows = [headers.join("\t")];
+
+        let renderList = [];
+        if (activeTrackerSubject === 'ALL') {
+            renderList = [...syllabusData.DT, ...syllabusData.IDT, ...syllabusData.IBS];
+        } else {
+            renderList = [...syllabusData[activeTrackerSubject]];
+        }
+
+        renderList.forEach(item => {
+            const state = trackerDatabase[item.id] || { rev1: false, sums: "0/0", rev2: false, score: "", rev3: false, notes: "" };
+            let row = [
+                item.id,
+                item.name,
+                item.cat,
+                state.rev1 ? "YES" : "NO",
+                state.sums || "0/0",
+                state.rev2 ? "YES" : "NO",
+                state.score || "N/A",
+                state.rev3 ? "YES" : "NO",
+                state.notes || ""
+            ];
+            rows.push(row.join("\t"));
+        });
+
+        const fullTSV = rows.join("\n");
+
+        const dummyEl = document.createElement("textarea");
+        document.body.appendChild(dummyEl);
+        dummyEl.value = fullTSV;
+        dummyEl.select();
+        try {
+            document.execCommand("copy");
+            showToast("Filtered Chapter tracker copied to clipboard! Paste directly (Ctrl+V) into Excel or Google Sheets.", "success");
+        } catch (err) {
+            showToast("Failed to copy clipboard automatically. Please try manual copy.", "error");
+        }
+        document.body.removeChild(dummyEl);
+    }
+
+    // Study Planner Tab Control
+    function setPlannerPhase(phaseNum) {
+        activePlannerPhase = phaseNum;
+        const phases = [1, 2, 3, 4];
+        phases.forEach(p => {
+            const btn = document.getElementById(`btn-phase-${p}`);
+            if (btn) {
+                if (p === phaseNum) {
+                    btn.className = "p-4 rounded-xl border border-indigo-500 bg-indigo-600/15 text-left transition duration-200";
+                    btn.querySelector('div:first-child').className = "text-[10px] font-extrabold uppercase text-indigo-400";
+                    btn.querySelector('div:nth-child(2)').className = "text-sm font-bold text-white mt-1";
+                } else {
+                    btn.className = "p-4 rounded-xl border border-slate-800 bg-slate-900 text-left hover:border-indigo-500/10 transition duration-200";
+                    btn.querySelector('div:first-child').className = "text-[10px] font-extrabold uppercase text-slate-500";
+                    btn.querySelector('div:nth-child(2)').className = "text-sm font-bold text-slate-200 mt-1";
+                }
+            }
+        });
+        renderPlannerSchedule();
+    }
+
+    function renderPlannerSchedule() {
+        const container = document.getElementById('planner-blocks-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const subTitle = document.getElementById('planner-detail-subtitle');
+        const mainTitle = document.getElementById('planner-detail-title');
+        const hourTitle = document.getElementById('planner-detail-hours');
+
+        if (activePlannerPhase === 1) {
+            if (subTitle) subTitle.textContent = "Phase 1: First Comprehensive Revision";
+            if (mainTitle) mainTitle.textContent = "August 1 – September 15 (45 Days)";
+            if (hourTitle) hourTitle.textContent = "4 - 8 Hours Scale-up";
+        } else if (activePlannerPhase === 2) {
+            if (subTitle) subTitle.textContent = "Phase 2: Rapid Block Re-runs";
+            if (mainTitle) mainTitle.textContent = "September 16 – October 5 (20 Days)";
+            if (hourTitle) hourTitle.textContent = "8 - 10 Hours Momentum";
+        } else if (activePlannerPhase === 3) {
+            if (subTitle) subTitle.textContent = "Phase 3: Mock Exams & Case Coordination";
+            if (mainTitle) mainTitle.textContent = "October 6 – October 24 (19 Days)";
+            if (hourTitle) hourTitle.textContent = "10 - 11 Hours Peak";
+        } else if (activePlannerPhase === 4) {
+            if (subTitle) subTitle.textContent = "Phase 4: Last Day Revision Fast Recall";
+            if (mainTitle) mainTitle.textContent = "October 25 – October 31 (7 Days)";
+            if (hourTitle) hourTitle.textContent = "11 - 12 Hours Hyper LDR";
+        }
+
+        const phaseScheduleList = plannerSchedules[activePlannerPhase];
+
+        phaseScheduleList.forEach(blk => {
+            const blkCard = document.createElement('div');
+            blkCard.className = "bg-slate-900/40 border border-slate-800/80 rounded-xl overflow-hidden";
+            
+            let headerHtml = `
+                <div class="bg-slate-900/80 border-b border-slate-800 px-5 py-3 flex items-center justify-between">
+                    <span class="text-xs font-extrabold uppercase text-indigo-400 tracking-wider">${blk.block}</span>
+                    <span class="text-xs font-semibold text-slate-400">${blk.dates}</span>
+                </div>
+            `;
+
+            let itemsHtml = `<div class="divide-y divide-slate-850">`;
+            
+            blk.items.forEach(schItem => {
+                const isChecked = studyPlannerProgress[schItem.id] || false;
+                itemsHtml += `
+                    <div class="p-4 flex items-start space-x-3 hover:bg-slate-900/20 transition duration-150">
+                        <input type="checkbox" onchange="togglePlannerCheck('${schItem.id}')" ${isChecked ? 'checked' : ''} class="mt-0.5 w-4.5 h-4.5 rounded text-indigo-600 bg-slate-950 border-slate-800 focus:ring-indigo-500 focus:ring-offset-slate-900 shrink-0">
+                        <div class="flex-1">
+                            <span class="text-xs font-bold ${isChecked ? 'line-through text-slate-500' : 'text-slate-200'}">${schItem.title}</span>
+                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">${schItem.task}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            itemsHtml += '</div>';
+
+            blkCard.innerHTML = headerHtml + itemsHtml;
+            container.appendChild(blkCard);
+        });
+    }
+
+    function togglePlannerCheck(itemId) {
+        studyPlannerProgress[itemId] = !studyPlannerProgress[itemId];
+        savePlannerToLocalStorage();
+        updateDashboardMetrics();
+        renderPlannerSchedule();
+        showToast("Planner block milestone status updated.", "info");
+    }
+
+    // Ledger Notebook system controls
+    function filterLedgerTab(subjCode) {
+        activeLedgerSubject = subjCode;
+        const subjs = ['ALL', 'DT', 'IDT'];
+        subjs.forEach(s => {
+            const btn = document.getElementById(`btn-ledger-${s.toLowerCase()}`);
+            if (btn) {
+                if (s === subjCode) {
+                    btn.className = "px-3 py-1.5 text-xs font-semibold rounded bg-indigo-600/25 border border-indigo-500/20 text-indigo-300";
+                } else {
+                    btn.className = "px-3 py-1.5 text-xs font-semibold rounded hover:bg-slate-850 hover:text-white text-slate-400";
+                }
+            }
+        });
+        renderLedgerCards();
+    }
+
+    function renderLedgerCards() {
+        const grid = document.getElementById('ledger-cards-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        let filtered = [];
+        if (activeLedgerSubject === 'ALL') {
+            filtered = trickyAdjustmentsLedger;
+        } else {
+            filtered = trickyAdjustmentsLedger.filter(x => x.subject === activeLedgerSubject);
+        }
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="col-span-1 md:col-span-2 flex flex-col items-center justify-center p-12 bg-slate-900/30 rounded-xl border border-slate-850 text-center">
+                    <i class="fa-solid fa-folder-open text-4xl text-slate-600 mb-3"></i>
+                    <span class="text-sm font-semibold text-slate-400">No adjustment entries on record</span>
+                    <p class="text-xs text-slate-500 mt-1 max-w-sm">Jot down any tricky adjustment formulas or direct-tax assessment disallowances here for fast flip revisions.</p>
+                </div>
+            `;
+            return;
+        }
+
+        filtered.forEach((adj, idx) => {
+            let labelColor = "text-indigo-400 bg-indigo-950/50 border-indigo-900/30";
+            if (adj.subject === 'IDT') labelColor = "text-emerald-400 bg-emerald-950/50 border-emerald-900/30";
+
+            const card = document.createElement('div');
+            card.className = "p-5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3 relative group overflow-hidden flex flex-col justify-between";
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 text-[9px] font-bold rounded border ${labelColor}">${adj.chapterId || adj.subject}</span>
+                        <div class="flex items-center space-x-1.5 opacity-60 group-hover:opacity-100 transition">
+                            <button onclick="editLedgerEntry('${adj.id}')" title="Edit provision details" class="text-slate-400 hover:text-indigo-400 text-xs p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLedgerEntry('${adj.id}')" title="Delete entry" class="text-slate-400 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-sm text-slate-200 mt-2 text-xs">${adj.summary}</h4>
+                    <p class="text-xs text-slate-400 font-mono bg-slate-950 p-2.5 rounded border border-slate-850 mt-2.5 leading-relaxed whitespace-pre-line">${adj.details}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function openAdjustmentModal() {
+        document.getElementById('edit-adj-index').value = '';
+        document.getElementById('modal-ledger-title').textContent = "Add Tricky Adjustment Entry";
+        document.getElementById('adj-summary').value = '';
+        document.getElementById('adj-details').value = '';
+        
+        populateModalChapterDropdown();
+        const modal = document.getElementById('adjustment-modal');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAdjustmentModal() {
+        const modal = document.getElementById('adjustment-modal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    function populateModalChapterDropdown() {
+        const subj = document.getElementById('adj-subject').value;
+        const select = document.getElementById('adj-chapter-select');
+        if (!select) return;
+        select.innerHTML = '';
+        
+        syllabusData[subj].forEach(chap => {
+            const opt = document.createElement('option');
+            opt.value = chap.id;
+            opt.textContent = `${chap.id}: ${chap.name}`;
+            select.appendChild(opt);
+        });
+    }
+
+    // Dynamic subject selection listener inside modal
+    const adjSubjectSelect = document.getElementById('adj-subject');
+    if (adjSubjectSelect) {
+        adjSubjectSelect.addEventListener('change', populateModalChapterDropdown);
+    }
+
+    function saveAdjustmentLedger(e) {
+        e.preventDefault();
+        const editId = document.getElementById('edit-adj-index').value;
+        const subject = document.getElementById('adj-subject').value;
+        const chapterId = document.getElementById('adj-chapter-select').value;
+        const summary = document.getElementById('adj-summary').value;
+        const details = document.getElementById('adj-details').value;
+
+        if (editId) {
+            const index = trickyAdjustmentsLedger.findIndex(x => x.id === editId);
+            if (index !== -1) {
+                trickyAdjustmentsLedger[index] = { id: editId, subject, chapterId, summary, details };
+                showToast("Adjustment note updated successfully.", "success");
+            }
+        } else {
+            const newAdj = {
+                id: `adj-${Date.now()}`,
+                subject,
+                chapterId,
+                summary,
+                details
+            };
+            trickyAdjustmentsLedger.unshift(newAdj);
+            showToast("New tricky adjustment entry saved to notebook.", "success");
+        }
+
+        saveLedgerToLocalStorage();
+        updateDashboardMetrics();
+        renderLedgerCards();
+        closeAdjustmentModal();
+    }
+
+    function editLedgerEntry(id) {
+        const entry = trickyAdjustmentsLedger.find(x => x.id === id);
+        if (!entry) return;
+
+        document.getElementById('edit-adj-index').value = entry.id;
+        document.getElementById('modal-ledger-title').textContent = "Edit Adjustment Entry";
+        document.getElementById('adj-subject').value = entry.subject;
+        populateModalChapterDropdown();
+        document.getElementById('adj-chapter-select').value = entry.chapterId;
+        document.getElementById('adj-summary').value = entry.summary;
+        document.getElementById('adj-details').value = entry.details;
+
+        const modal = document.getElementById('adjustment-modal');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function deleteLedgerEntry(id) {
+        // Simple custom confirmation UI instead of window.confirm to bypass browser blockages
+        const entry = trickyAdjustmentsLedger.find(x => x.id === id);
+        if (!entry) return;
+        
+        trickyAdjustmentsLedger = trickyAdjustmentsLedger.filter(x => x.id !== id);
+        saveLedgerToLocalStorage();
+        updateDashboardMetrics();
+        renderLedgerCards();
+        showToast("Entry removed from ledger database.", "info");
+    }
+
+    // JSON file backup creator
+    function exportJSONBackup() {
+        const payload = {
+            tracker: trackerDatabase,
+            planner: studyPlannerProgress,
+            ledger: trickyAdjustmentsLedger,
+            simDate: document.getElementById('simulated-date').value
+        };
+
+        const jsonString = JSON.stringify(payload, null, 2);
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonString));
+        element.setAttribute('download', `CA_Final_G2_State_${new Date().toISOString().slice(0, 10)}.json`);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        showToast("Backup downloaded successfully.", "success");
+    }
+
+    // JSON restoration parsing
+    function importJSONBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const config = JSON.parse(e.target.result);
+                if (config.tracker && config.planner && config.ledger) {
+                    trackerDatabase = config.tracker;
+                    studyPlannerProgress = config.planner;
+                    trickyAdjustmentsLedger = config.ledger;
+                    
+                    saveTrackerToLocalStorage();
+                    savePlannerToLocalStorage();
+                    saveLedgerToLocalStorage();
+
+                    if (config.simDate) {
+                        safeSetItem('CA_G2_Sim_Date', config.simDate);
+                        const simIn = document.getElementById('simulated-date');
+                        if (simIn) simIn.value = config.simDate;
+                        simulatedSystemDate = new Date(config.simDate);
+                    }
+
+                    initializeDatabase();
+                    showToast("Config restored successfully! Redrawing screen modules...", "success");
+                    
+                    switchTab(activeTab);
+                } else {
+                    showToast("Failed to parse configurations. Invalid setup payload.", "error");
+                }
+            } catch (err) {
+                showToast("Failed to read JSON backup file. Parse error.", "error");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // DB Hard reset
+    function resetAppDatabase() {
+        try {
+            localStorage.clear();
+        } catch (e) {
+            console.warn(e);
+        }
+        memoryBackupStorage = {};
+        trackerDatabase = {};
+        studyPlannerProgress = {};
+        trickyAdjustmentsLedger = [];
+        
+        const simInput = document.getElementById('simulated-date');
+        if (simInput) simInput.value = "2026-08-01";
+        
+        simulatedSystemDate = new Date("2026-08-01");
+        initializeDatabase();
+        switchTab('dashboard');
+        showToast("Database storage completely cleared and reset.", "success");
+    }
+
+    // Safe launch using DOMContentLoaded to prevent network CDN lag blockages
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeDatabase();
+    });
+</script>
+</body>
+</html>
